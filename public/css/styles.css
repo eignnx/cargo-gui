@@ -1,0 +1,14 @@
+#project-title {
+    font-family: sans-serif;
+}
+
+.terminal-output {
+    margin: 1rem 3rem;
+    padding: 1rem;
+
+    border: 2px solid grey;
+    border-radius: 5px;
+
+    background-color: rgb(27, 27, 27);
+    color: white;
+}

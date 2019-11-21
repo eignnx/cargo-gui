@@ -3,7 +3,7 @@ const app = new Vue({
     template: `
     <main>
         <header>
-            <h1>{{ projectConfig ? projectConfig.path : "..." }}</h1>
+            <h1 id="project-title">{{ projectConfig ? projectConfig.path : "..." }}</h1>
         </header>
         <section>
             <button @click="cargoCmd('run')">▶ Run</button>
@@ -16,16 +16,25 @@ const app = new Vue({
                 v-model="customCmd"
                 @keyup.enter="submitCustomCmd"
             />
+            <br>
             <span>
                 <label for="release-checkbox">Release Build?</label>
                 <input type="checkbox" id="release-checkbox" v-model="releaseBuild"/>
             </span>
         </section>
-        You entered: {{ customCmd }} <br>
-        Release build: {{ releaseBuild }} <br>
+
+        <hr>
+
+        <section>
+            <details>
+                <summary>Command History</summary>
+                <pre  class="terminal-output"><div v-for="cmd in history">{{ "$ " + cmd }}</div></pre>
+            </details>
+        </section>
+
         <section>
             <h5>Status code: {{ cmdStatus }}</h5>
-            {{ cmdResponse }}
+            <pre class="terminal-output">{{ cmdResponse }}</pre>
         </section>
     </main>
     `,
@@ -36,6 +45,7 @@ const app = new Vue({
         releaseBuild: false,
         cmdStatus: "",
         cmdResponse: "",
+        history: [],
     }),
 
     mounted() {
@@ -46,7 +56,10 @@ const app = new Vue({
 
     methods: {
         submitCustomCmd() {
-            this.runCmd(this.customCmd);
+            console.log(`attempting to run \`\$ ${this.customCmd}\`...`);
+            this.cmdResponse = "i don't know how to run custom cmds yet, srry";
+            this.history.push(this.customCmd);
+            this.customCmd = "";
         },
 
         cargoCmd(cmd) {
@@ -54,8 +67,14 @@ const app = new Vue({
                 ...(this.releaseBuild ? [`--release`] : []),
             ];
 
-            this.cmdStatus = "";
-            this.cmdResponse = `Running \`\$ cargo ${cmd} ${cargoOpts.join(" ")}\`...`;
+            // Reset the command status.
+            this.cmdStatus = "...";
+
+            // Display status while command executes.
+            const cmdText = `cargo ${cmd} ${cargoOpts.join(" ")}`.trim();
+            this.cmdResponse = `Running \`\$ ${cmdText}\`...`;
+
+            this.history.push(cmdText);
 
             fetch("/api/cargo", {
                 method: "POST",
@@ -72,10 +91,5 @@ const app = new Vue({
                     }
                 });
         },
-
-        runCmd(cmd) {
-            console.log("unsupported!");
-            this.cmdResponse = "i don't know how to run custom cmds yet, srry";
-        }
     },
 });
