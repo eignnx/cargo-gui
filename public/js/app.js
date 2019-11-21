@@ -3,13 +3,13 @@ const app = new Vue({
     template: `
     <main>
         <header>
-            <h1>{{ projName }}</h1>
+            <h1>{{ projectConfig ? projectConfig.path : "..." }}</h1>
         </header>
         <section>
-            <button @click="cargoCmd('run')">Run ▶️</button>
-            <button @click="cargoCmd('build')">Build 🔨</button>
-            <button @click="cargoCmd('test')">Test 🧪</button>
-            <button @click="cargoCmd('check')">Check ✔️</button>
+            <button @click="cargoCmd('run')">▶ Run</button>
+            <button @click="cargoCmd('build')">🔨 Build</button>
+            <button @click="cargoCmd('test')">🧪 Test</button>
+            <button @click="cargoCmd('check')">✔️ Check</button>
             <input
                 type="text"
                 placeholder="Custom cmd..."
@@ -31,12 +31,18 @@ const app = new Vue({
     `,
 
     data: () => ({
-        projName: "~/Projects/Rust/cargo-gui",
+        projectConfig: null,
         customCmd: "",
         releaseBuild: false,
         cmdStatus: "",
         cmdResponse: "",
     }),
+
+    mounted() {
+        fetch("/api/project_config")
+            .then(resp => resp.json())
+            .then(json => { console.log(json); this.projectConfig = json; });
+    },
 
     methods: {
         submitCustomCmd() {
@@ -69,6 +75,7 @@ const app = new Vue({
 
         runCmd(cmd) {
             console.log("unsupported!");
+            this.cmdResponse = "i don't know how to run custom cmds yet, srry";
         }
     },
 });
