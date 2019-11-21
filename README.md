@@ -3,6 +3,8 @@ A browser interface for working through rustc errors and running cargo commands.
 
 **SUPER WORK IN PROGRESS RITE NWO!**
 
+![sample image](https://github.com/eignnx/cargo-gui/blob/master/test-screenshot.png)
+
 ## Running
 
 Start up the server:
