@@ -45,6 +45,14 @@ const app = new Vue({
 
         runCmd(cmd) {
             console.log(`Running \`\$ ${cmd}\`...`);
+            fetch("/api", {
+                method: "POST",
+                headers: new Headers({ "Content-Type": "application/json"}),
+                body: JSON.stringify({ cmd })
+            }).then(res => res.text())
+            .then(text => {
+                console.log("Got this back from the server: ", text);
+            });
         }
     },
 });
