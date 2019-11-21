@@ -6,6 +6,7 @@ const app = new Vue({
             <h1>{{ projName }}</h1>
         </header>
         <section>
+            <button @click="cargoCmd('run')">Run ▶️</button>
             <button @click="cargoCmd('build')">Build 🔨</button>
             <button @click="cargoCmd('test')">Test 🧪</button>
             <button @click="cargoCmd('check')">Check ✔️</button>
@@ -22,6 +23,9 @@ const app = new Vue({
         </section>
         You entered: {{ customCmd }} <br>
         Release build: {{ releaseBuild }} <br>
+        <section>
+            {{ cmdResponse }}
+        </section>
     </main>
     `,
 
@@ -29,6 +33,7 @@ const app = new Vue({
         projName: "~/Projects/Rust/cargo-gui",
         customCmd: "",
         releaseBuild: false,
+        cmdResponse: "",
     }),
 
     methods: {
@@ -37,22 +42,26 @@ const app = new Vue({
         },
 
         cargoCmd(cmd) {
-            const opts = [
+            const cargoOpts = [
                 ...(this.releaseBuild ? [`--release`] : []),
-            ].join(" ");
-            this.runCmd(`cargo ${cmd} ${opts}`.trim())
+            ];
+
+            this.cmdResponse = `Running \`\$ cargo ${cmd} ${cargoOpts.join(" ")}\`...`;
+
+            fetch("/api/cargo", {
+                method: "POST",
+                headers: new Headers({ "Content-Type": "application/json"}),
+                body: JSON.stringify({ cmd, cargoOpts })
+            })
+                .then(res => res.text())
+                .then(text => {
+                    console.log("Resp: ", text);
+                    this.cmdResponse = text;
+                });
         },
 
         runCmd(cmd) {
-            console.log(`Running \`\$ ${cmd}\`...`);
-            fetch("/api", {
-                method: "POST",
-                headers: new Headers({ "Content-Type": "application/json"}),
-                body: JSON.stringify({ cmd })
-            }).then(res => res.text())
-            .then(text => {
-                console.log("Got this back from the server: ", text);
-            });
+            console.log("unsupported!");
         }
     },
 });

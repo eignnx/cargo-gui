@@ -6,21 +6,32 @@ use serde::Deserialize;
 const PORT: u32 = 8080;
 
 #[derive(Deserialize)]
-struct Cmd {
+struct CargoCmd {
     cmd: String,
+    #[serde(rename = "cargoOpts")]
+    cargo_opts: Vec<String>,
 }
 
-fn run_cmd(req: web::Json<Cmd>) -> impl Responder {
-    let output = String::from_utf8(Command::new("cargo")
-        .arg("run")
+fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
+    let command = Command::new("cargo")
+        .arg(&req.cmd)
+        .args(&req.cargo_opts)
         .current_dir("/tmp/cargo-gui-test")
         .output()
-        .expect("command ran successfully")
-        .stdout).expect("utf-8 encoded text returned from command");
-        
-    let resp = format!("ran command `{}`, got output `{}`", req.cmd, output);
-    println!("{}", resp);
-    resp
+        .expect("command is able to run");
+    
+    let stdout = command.stdout;
+    let stderr = command.stderr;
+    
+    let tostr = |s| String::from_utf8(s).expect("utf-8 encoded text returned from command");
+
+    let output = format!("{}\n\n{}", tostr(stdout), tostr(stderr));
+    
+    let opts: String = req.cargo_opts.as_slice().join(" ");
+    let cmd: String = format!("cargo {} {}", req.cmd, opts).trim().into();
+    println!("ran command `{}`", cmd);
+    println!("got output `{}`", output);
+    format!("{}", output)
 }
 
 fn main() {
@@ -29,7 +40,8 @@ fn main() {
     #[rustfmt::skip]
     let app = || App::new()
         .service(fs::Files::new("/site", "./public").show_files_listing())
-        .service(web::resource("/api").route(web::post().to(run_cmd)))
+        .service(web::scope("/api")
+            .service(web::resource("/cargo").route(web::post().to(run_cargo_cmd))))
         ;
     HttpServer::new(app)
         .bind(&format!("127.0.0.1:{}", PORT))
