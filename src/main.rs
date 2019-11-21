@@ -1,7 +1,7 @@
 use std::process::Command;
 use actix_files as fs;
 use actix_web::{web, App, HttpServer, Responder};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 const PORT: u32 = 8080;
 
@@ -12,6 +12,13 @@ struct CargoCmd {
     cargo_opts: Vec<String>,
 }
 
+#[derive(Serialize)]
+struct CmdResponse {
+    status: i32,
+    stdout: String,
+    stderr: String,
+}
+
 fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
     let command = Command::new("cargo")
         .arg(&req.cmd)
@@ -20,18 +27,22 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
         .output()
         .expect("command is able to run");
     
-    let stdout = command.stdout;
-    let stderr = command.stderr;
-    
-    let tostr = |s| String::from_utf8(s).expect("utf-8 encoded text returned from command");
+    let to_string = |s| String::from_utf8(s).expect("utf-8 encoded text returned from command");
+    let stdout = to_string(command.stdout);
+    let stderr = to_string(command.stderr);
 
-    let output = format!("{}\n\n{}", tostr(stdout), tostr(stderr));
     
     let opts: String = req.cargo_opts.as_slice().join(" ");
     let cmd: String = format!("cargo {} {}", req.cmd, opts).trim().into();
     println!("ran command `{}`", cmd);
-    println!("got output `{}`", output);
-    format!("{}", output)
+    println!("got stdout `{}`", stdout);
+    println!("got stderr `{}`", stderr);
+
+    serde_json::to_string(&CmdResponse {
+        status: command.status.code().unwrap(),
+        stdout,
+        stderr,
+    }).unwrap()
 }
 
 fn main() {

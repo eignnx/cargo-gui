@@ -24,6 +24,7 @@ const app = new Vue({
         You entered: {{ customCmd }} <br>
         Release build: {{ releaseBuild }} <br>
         <section>
+            <h5>Status code: {{ cmdStatus }}</h5>
             {{ cmdResponse }}
         </section>
     </main>
@@ -33,6 +34,7 @@ const app = new Vue({
         projName: "~/Projects/Rust/cargo-gui",
         customCmd: "",
         releaseBuild: false,
+        cmdStatus: "",
         cmdResponse: "",
     }),
 
@@ -46,6 +48,7 @@ const app = new Vue({
                 ...(this.releaseBuild ? [`--release`] : []),
             ];
 
+            this.cmdStatus = "";
             this.cmdResponse = `Running \`\$ cargo ${cmd} ${cargoOpts.join(" ")}\`...`;
 
             fetch("/api/cargo", {
@@ -53,10 +56,14 @@ const app = new Vue({
                 headers: new Headers({ "Content-Type": "application/json"}),
                 body: JSON.stringify({ cmd, cargoOpts })
             })
-                .then(res => res.text())
-                .then(text => {
-                    console.log("Resp: ", text);
-                    this.cmdResponse = text;
+                .then(resp => resp.json())
+                .then(resp => {
+                    this.cmdStatus = resp.status;
+                    if (resp.status === 0) {
+                        this.cmdResponse = resp.stdout;
+                    } else {
+                        this.cmdResponse = resp.stderr;
+                    }
                 });
         },
 
