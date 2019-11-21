@@ -2,55 +2,28 @@ const app = new Vue({
     el: "#app",
     template: `
     <main>
-        <header>
-            <h1 id="project-title">{{ projectConfig ? projectConfig.path : "..." }}</h1>
-        </header>
-        <section>
-            <button @click="cargoCmd('run')">▶ Run</button>
-            <button @click="cargoCmd('build')">🔨 Build</button>
-            <button @click="cargoCmd('test')">🧪 Test</button>
-            <button @click="cargoCmd('check')">✔️ Check</button>
-            <input
-                type="text"
-                placeholder="Custom cmd..."
-                v-model="customCmd"
-                @keyup.enter="submitCustomCmd"
-            />
-            <br>
-            <span>
-                <label for="release-checkbox">Release Build?</label>
-                <input type="checkbox" id="release-checkbox" v-model="releaseBuild"/>
-            </span>
-        </section>
-
+        <project-title
+            :title="projectConfig ? projectConfig.path : '...'"
+        />
+        <cmd-menu
+            @cargo-cmd="cargoCmd"
+            @custom-cmd="customCmd"
+        />
         <hr>
+        <cmd-history
+            :history="history"
+        />
 
-        <section>
-            <details>
-                <summary>Command History</summary>
-                <pre  class="terminal-output"><div v-for="cmd in history">{{ "$ " + cmd }}</div></pre>
-            </details>
-        </section>
-
-        <section>
-            <h4>Status code: {{ cmdStatus }}</h4>
-            <h4 v-if="errors !== null">Errors: {{ errors.length }}</h4>
-            <pre
-                class="terminal-output"
-                v-if="errors !== null"
-                v-for="err in errors"
-            >{{ err.message.rendered }}</pre>
-            <pre
-                class="terminal-output"
-                v-if="errors === null"
-            >{{ cmdResponse }}</pre>
-        </section>
+        <response-window
+            :cmdStatus="cmdStatus"
+            :cmdResponse="cmdResponse"
+            :compilerErrors="errors"
+        />
     </main>
     `,
 
     data: () => ({
         projectConfig: null,
-        customCmd: "",
         releaseBuild: false,
         cmdStatus: "",
         cmdResponse: "",
@@ -65,17 +38,13 @@ const app = new Vue({
     },
 
     methods: {
-        submitCustomCmd() {
-            console.log(`attempting to run \`\$ ${this.customCmd}\`...`);
+        customCmd(cmd) {
+            console.log(`attempting to run \`\$ ${cmd}\`...`);
             this.cmdResponse = "i don't know how to run custom cmds yet, srry";
-            this.history.push(this.customCmd);
-            this.customCmd = "";
+            this.history.push(cmd);
         },
 
-        cargoCmd(cmd) {
-            const cargoOpts = [
-                ...(this.releaseBuild ? [`--release`] : []),
-            ];
+        cargoCmd([cmd, ...cargoOpts]) {
 
             // Reset the command status.
             this.cmdStatus = "...";
@@ -83,9 +52,9 @@ const app = new Vue({
             // Display status while command executes.
             const cmdText = `cargo ${cmd} ${cargoOpts.join(" ")}`.trim();
             this.cmdResponse = `Running \`\$ ${cmdText}\`...`;
-            this.errors = [];
-
             this.history.push(cmdText);
+
+            this.errors = [];
 
             fetch("/api/cargo", {
                 method: "POST",
@@ -117,4 +86,11 @@ const app = new Vue({
                 });
         },
     },
+
+    components: {
+        projectTitle,
+        cmdMenu,
+        cmdHistory,
+        responseWindow,
+    }
 });
