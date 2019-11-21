@@ -46,10 +46,8 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
         .output()
         .expect("command is able to run");
     
-    let to_string = |s| String::from_utf8(s).expect("utf-8 encoded text returned from command");
-    let stdout = to_string(command.stdout);
-    let stderr = to_string(command.stderr);
-
+    let stdout = String::from_utf8_lossy(&command.stdout).to_string();
+    let stderr = String::from_utf8_lossy(&command.stderr).to_string();
     
     let opts: String = req.cargo_opts.as_slice().join(" ");
     let cmd: String = format!("cargo {} {}", req.cmd, opts).trim().into();
