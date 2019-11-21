@@ -33,8 +33,17 @@ const app = new Vue({
         </section>
 
         <section>
-            <h5>Status code: {{ cmdStatus }}</h5>
-            <pre class="terminal-output">{{ cmdResponse }}</pre>
+            <h4>Status code: {{ cmdStatus }}</h4>
+            <h4 v-if="errors !== null">Errors: {{ errors.length }}</h4>
+            <pre
+                class="terminal-output"
+                v-if="errors !== null"
+                v-for="err in errors"
+            >{{ err.message.rendered }}</pre>
+            <pre
+                class="terminal-output"
+                v-if="errors === null"
+            >{{ cmdResponse }}</pre>
         </section>
     </main>
     `,
@@ -46,6 +55,7 @@ const app = new Vue({
         cmdStatus: "",
         cmdResponse: "",
         history: [],
+        errors: null,
     }),
 
     mounted() {
@@ -73,6 +83,7 @@ const app = new Vue({
             // Display status while command executes.
             const cmdText = `cargo ${cmd} ${cargoOpts.join(" ")}`.trim();
             this.cmdResponse = `Running \`\$ ${cmdText}\`...`;
+            this.errors = [];
 
             this.history.push(cmdText);
 
@@ -85,10 +96,24 @@ const app = new Vue({
                 .then(resp => {
                     this.cmdStatus = resp.status;
                     if (resp.status === 0) {
-                        this.cmdResponse = resp.stdout;
+                        // Remove first line, which is a JSON compiler_artifact message.
+                        this.cmdResponse = resp.stdout.split("\n").slice(1).join("\n");
+                        this.errors = null;
                     } else {
-                        this.cmdResponse = resp.stderr;
+                        this.displayCompilerError(resp.stdout);
                     }
+                });
+        },
+
+        displayCompilerError(stdout) {
+            this.errors = stdout
+                .trim()
+                .split("\n")
+                .map(JSON.parse)
+                .map(x => { console.log(x); return x })
+                .filter(err => {
+                    return err.message.message !== "aborting due to previous error"
+                        && !err.message.message.startsWith("For more information about this error, try");
                 });
         },
     },

@@ -42,6 +42,7 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
     let command = Command::new("cargo")
         .arg(&req.cmd)
         .args(&req.cargo_opts)
+        .arg("--message-format").arg("json")
         .current_dir(env::current_dir().unwrap())
         .output()
         .expect("command is able to run");
@@ -55,11 +56,8 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
     println!("got stdout `{}`", stdout);
     println!("got stderr `{}`", stderr);
 
-    serde_json::to_string(&CmdResponse {
-        status: command.status.code().unwrap(),
-        stdout,
-        stderr,
-    }).unwrap()
+    let status = command.status.code().unwrap();
+    serde_json::to_string(&CmdResponse { status, stdout, stderr }).unwrap()
 }
 
 fn main() {
