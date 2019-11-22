@@ -7,17 +7,52 @@ const responseWindow = Vue.component("response-window", {
 
     template: `
     <section>
-        <h4>Status code: {{ cmdStatus }}</h4>
-        <h4 v-if="compilerErrors !== null">Errors: {{ compilerErrors.length }}</h4>
-        <pre
-            class="terminal-output"
-            v-if="compilerErrors !== null"
-            v-for="err in compilerErrors"
-        >{{ err.message.rendered }}</pre>
-        <pre
-            class="terminal-output"
-            v-if="compilerErrors === null"
-        >{{ cmdResponse }}</pre>
+        <div class="row">
+            <div class="col">
+                <h4>Status code: {{ cmdStatus }}</h4>
+                <h4 v-if="compilerErrors !== null">Errors: {{ compilerErrors.length }}</h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <pagination-nav
+                    ariaLabel="Compilation Errors Navigator"
+                    v-if="compilerErrors !== null && compilerErrors !== []"
+                    :itemCount="compilerErrors.length"
+                    v-model="currentErrorIdx"
+                />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <pre
+                    class="terminal-output"
+                    v-if="compilerErrors !== null && compilerErrors !== []"
+                >{{ currentErrorMessage }}</pre>
+
+                <pre
+                    class="terminal-output"
+                    v-if="compilerErrors === null || compilerErrors === []"
+                >{{ cmdResponse }}</pre>
+            </div>
+        </div>
+
     </section>
     `,
+
+    data: () => ({
+        currentErrorIdx: 0,
+    }),
+
+    computed: {
+        currentErrorMessage() {
+            return this.compilerErrors[this.currentErrorIdx].message.rendered;
+        },
+    },
+
+    components: {
+        paginationNav,
+    },
 });
