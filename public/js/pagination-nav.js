@@ -23,10 +23,28 @@ const paginationNav = Vue.component("pagination-nav", {
         currentIdx: 0,
     }),
 
+    created() {
+        window.addEventListener('keydown', this.keyDown)
+    },
+
+    beforeDestroy() {
+        window.removeEventListener('keydown', this.keyDown)
+    },
+
     methods: {
+        keyDown(e) {
+            if (e.code === "ArrowLeft") {
+                this.prev();
+            } else if (e.code === "ArrowRight") {
+                this.next();
+            }
+        },
+
         prev() {
-            this.currentIdx--;
-            this.$emit("input", this.currentIdx);
+            if (this.currentIdx > 0) {
+                this.currentIdx--;
+                this.$emit("input", this.currentIdx);
+            }
         },
 
         first() {
@@ -40,8 +58,10 @@ const paginationNav = Vue.component("pagination-nav", {
         },
 
         next() {
-            this.currentIdx++;
-            this.$emit("input", this.currentIdx);
+            if (this.currentIdx < this.itemCount - 1) {
+                this.currentIdx++;
+                this.$emit("input", this.currentIdx);
+            }
         },
     },
 
