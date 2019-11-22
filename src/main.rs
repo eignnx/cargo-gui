@@ -22,20 +22,26 @@ struct CmdResponse {
 
 #[derive(Serialize)]
 struct ProjectConfig {
+    title: String,
     path: String,
 }
 
 fn get_project_config() -> impl Responder {
     println!("project config requested");
-    let cwd = env::current_dir()
-        .expect("pwd is accessable")
+    let cwd = env::current_dir().expect("pwd is accessable");
+    let path = cwd
         .to_str()
-        .expect("pwd is a valid string")
+        .expect("cwd is a valid str")
         .into();
 
-    serde_json::to_string(&ProjectConfig {
-        path: cwd,
-    }).unwrap()
+    // TODO: Use the Cargo.toml file to get the actual project title.
+    let title = cwd
+        .file_name()
+        .map(|os_str| os_str.to_str().expect("file name is a valid str"))
+        .unwrap_or("/")
+        .into();
+
+    serde_json::to_string(&ProjectConfig { title, path }).unwrap()
 }
 
 fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
