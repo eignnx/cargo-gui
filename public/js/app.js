@@ -1,9 +1,10 @@
 const app = new Vue({
     el: "#app",
     template: `
-    <main class="container-fluid">
+    <main class="container">
         <project-title
-            :title="projectConfig ? projectConfig.path : '...'"
+            :title="projectConfig ? projectConfig.title : '...'"
+            :path="projectConfig ? projectConfig.path : '...'"
         />
         <cmd-menu
             @cargo-cmd="cargoCmd"
@@ -34,7 +35,7 @@ const app = new Vue({
     mounted() {
         fetch("/api/project_config")
             .then(resp => resp.json())
-            .then(json => { console.log(json); this.projectConfig = json; });
+            .then(json => this.projectConfig = json);
     },
 
     methods: {
