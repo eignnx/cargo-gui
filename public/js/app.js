@@ -1,7 +1,7 @@
 const app = new Vue({
     el: "#app",
     template: `
-    <main>
+    <main class="container-fluid">
         <project-title
             :title="projectConfig ? projectConfig.path : '...'"
         />

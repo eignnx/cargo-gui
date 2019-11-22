@@ -1,25 +1,52 @@
 const cmdMenu = Vue.component("cmd-menu", {
     template: `
-    <section>
-        <button @click="cargoCmd('run')">▶ Run</button>
-        <button @click="cargoCmd('build')">🔨 Build</button>
-        <button @click="cargoCmd('test')">🧪 Test</button>
-        <button @click="cargoCmd('check')">✔️ Check</button>
-        <input
-            type="text"
-            placeholder="Custom cmd..."
-            v-model="customCmd"
-            @keyup.enter="submitCustomCmd"
-        />
-        <br>
-        <span>
-            <label for="release-checkbox">Release Build?</label>
+    <section class="container">
+        <div class="form-inline mb-4">
+            <button
+                class="btn btn-outline-danger btn-lg m-1"
+                @click="cargoCmd('run')"
+            >▶ Run</button>
+            <button
+                class="btn btn-outline-primary btn-lg m-1"
+                @click="cargoCmd('build')"
+            >🔨 Build</button>
+            <button
+                class="btn btn-outline-success btn-lg m-1"
+                @click="cargoCmd('test')"
+            >🧪 Test</button>
+            <button
+                class="btn btn-outline-info btn-lg m-1"
+                @click="cargoCmd('check')"
+            >✔️ Check</button>
+            
+            <span class="input-group input-group-lg m-1">
+                <span class="input-group-prepend">
+                    <span class="input-group-text" id="custom-cmd-label">$</span>
+                </span>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Custom cmd..."
+                    aria-label="custom command" 
+                    aria-describedby="custom-cmd-label"
+                    v-model="customCmd"
+                    @keyup.enter="submitCustomCmd"
+                >
+                <span class="input-group-append">
+                    <button class="btn btn-outline-danger" @click="submitCustomCmd">▶ Exec</button>
+                </span>
+            </span>
+        </div>
+
+        <div class="form-check form-check-inline mb-4">
             <input
                 type="checkbox"
+                class="form-check-input"
                 id="release-checkbox"
                 v-model="releaseBuild"
             />
-        </span>
+            <label class="form-check-label" for="release-checkbox">Release Build?</label>
+        </div>
     </section>
     `,
 
