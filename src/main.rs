@@ -67,9 +67,24 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
     serde_json::to_string(&CmdResponse { status, stdout, stderr }).unwrap()
 }
 
+fn init_js_app(home: impl AsRef<str>) {
+    let home = home.as_ref();
+    let status = Command::new("npm")
+        .arg("install")
+        .current_dir(format!("{}/public", home))
+        .status()
+        .expect("`npm install` will run successfully");
+
+    if !status.success() {
+        panic!("`npm install` failed to run!");
+    }
+}
+
 fn main() {
     // This environment variable is set up during compilation by `build.rs`.
     let cargo_gui_home = env!("CARGO_GUI_HOME");
+
+    init_js_app(&cargo_gui_home);
     
     println!("");
     println!("  Your `cargo-gui` dashboard is running at http://localhost:{}/site/index.html", PORT);
