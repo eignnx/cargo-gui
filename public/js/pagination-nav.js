@@ -6,7 +6,7 @@ const paginationNav = Vue.component("pagination-nav", {
 
     template: `
     <nav :aria-label="ariaLabel">
-        <ul class="pagination justify-content-center">
+        <ul class="pagination pagination-lg justify-content-center">
             <li :class="prevClasses"><a class="page-link" @click="prev" href="#">Previous</a></li>
             <li :class="firstClasses"><a class="page-link" @click="first" href="#">First</a></li>
 
