@@ -7,14 +7,22 @@ const paginationNav = Vue.component("pagination-nav", {
     template: `
     <nav :aria-label="ariaLabel">
         <ul class="pagination pagination-lg justify-content-center">
-            <li :class="prevClasses"><a class="page-link" @click="prev" href="#">Previous</a></li>
+            <li :class="prevClasses">
+                <a class="page-link" @click="prev" href="#" aria-label="Previous">
+                    <span aria-hidden="true">🡄</span>
+                </a>
+            </li>
             <li :class="firstClasses"><a class="page-link" @click="first" href="#">First</a></li>
 
             <!-- Current -->
             <li class="page-item active"><span class="page-link" href="#">{{ currentIdx + 1 }} of {{ itemCount }}</span></li>
 
             <li :class="lastClasses"><a class="page-link" @click="last" href="#">Last</a></li>
-            <li :class="nextClasses"><a class="page-link" @click="next" href="#">Next</a></li>
+            <li :class="nextClasses">
+                <a class="page-link" @click="next" href="#" aria-label="Next">
+                    <span aria-hidden="true">🡆</span>
+                </a>
+            </li>
         </ul>
     </nav>
     `,
