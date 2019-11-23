@@ -84,13 +84,19 @@ const app = new Vue({
                 .split("\n")
                 .map(JSON.parse)
                 .filter(err => {
-                    return err.message.message !== "aborting due to previous error"
-                        && !err.message.message.startsWith("For more information about this error, try");
+                    return (
+                        // Skip dependency build messages. Only keep errors.
+                        err.reason
+                        && err.reason === "compiler-message"
+
+                        // Skip these specfic messages.
+                        && err.message
+                        && !err.message.message.startsWith("aborting due to")
+                        && !err.message.message.startsWith("For more information about this error, try")
+                    );
                 })
                 .map(err => {
-                    console.log("WAS", err.message.rendered);
                     err.message.rendered = ansi_up.ansi_to_html(err.message.rendered);
-                    console.log("NOW", err.message.rendered);
                     return err;
                 });
         },
