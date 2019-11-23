@@ -1,23 +1,27 @@
 const cmdMenu = Vue.component("cmd-menu", {
     template: `
-    <section>
+    <section class="jumbotron">
         <div class="form-inline mb-4">
             <button
                 class="btn btn-outline-danger btn-lg mr-2"
                 @click="cargoCmd('run')"
-            >▶ Run</button>
+                aria-label="Run"
+            ><span aria-hidden="true">▶ Run</span></button>
             <button
                 class="btn btn-outline-primary btn-lg mr-2"
                 @click="cargoCmd('build')"
-            >🔨 Build</button>
+                aria-label="Build"
+            ><span aria-hidden="true">🔨 Build</span></button>
             <button
                 class="btn btn-outline-success btn-lg mr-2"
                 @click="cargoCmd('test')"
-            >🧪 Test</button>
+                aria-label="Test"
+            ><span aria-hidden="true">🧪 Test</span></button>
             <button
                 class="btn btn-outline-info btn-lg mr-2"
                 @click="cargoCmd('check')"
-            >✔️ Check</button>
+                aria-label="Check"
+            ><span aria-hidden="true">✔️ Check</span></button>
             
             <span class="input-group input-group-lg mr-2">
                 <span class="input-group-prepend">
@@ -33,7 +37,11 @@ const cmdMenu = Vue.component("cmd-menu", {
                     @keyup.enter="submitCustomCmd"
                 >
                 <span class="input-group-append">
-                    <button class="btn btn-outline-danger" @click="submitCustomCmd">▶ Exec</button>
+                    <button
+                        class="btn btn-outline-danger"
+                        @click="submitCustomCmd"
+                        aria-label="Execute"
+                    ><span aria-hidden="true">▶ Exec</span></button>
                 </span>
             </span>
 
@@ -44,7 +52,8 @@ const cmdMenu = Vue.component("cmd-menu", {
                 data-target="#options-panel"
                 aria-expanded="false"
                 aria-controls="options-panel"
-            >⯆ Options</button>
+                aria-label="Options"
+            ><span aria-hidden="true">⯆ Options</span></button>
         </div>
 
         <div class="collapse" id="options-panel">
