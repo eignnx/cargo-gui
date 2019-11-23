@@ -12,13 +12,10 @@ const app = new Vue({
             @custom-cmd="customCmd"
         />
 
-        <div class="row" v-if="cmdRunning">
-            <div class="col text-center my-5">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
+        <loading-indicator
+            v-if="cmdRunning"
+            @cancel="cancelCmd"
+        />
 
         <response-window
             v-if="!cmdRunning && cmdStatus !== null || cmdResponse !== null"
@@ -121,12 +118,17 @@ const app = new Vue({
             // Stop the loading spinner.
             this.cmdRunning = false;
         },
+
+        cancelCmd() {
+            console.log('cancelled!');
+        },
     },
 
     components: {
         projectTitle,
         cmdMenu,
         cmdHistory,
+        loadingIndicator,
         responseWindow,
     }
 });
