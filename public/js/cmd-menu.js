@@ -1,29 +1,29 @@
 const cmdMenu = Vue.component("cmd-menu", {
     template: `
-    <section class="jumbotron">
-        <div class="form-inline mb-4">
+    <section class="row">
+        <div class="col form-inline mb-4">
             <button
-                class="btn btn-outline-danger btn-lg mr-2"
+                class="btn btn-outline-danger btn-lg m-2"
                 @click="cargoCmd('run')"
                 aria-label="Run"
             ><span aria-hidden="true">▶ Run</span></button>
             <button
-                class="btn btn-outline-primary btn-lg mr-2"
+                class="btn btn-outline-primary btn-lg m-2"
                 @click="cargoCmd('build')"
                 aria-label="Build"
             ><span aria-hidden="true">🔨 Build</span></button>
             <button
-                class="btn btn-outline-success btn-lg mr-2"
+                class="btn btn-outline-success btn-lg m-2"
                 @click="cargoCmd('test')"
                 aria-label="Test"
             ><span aria-hidden="true">🧪 Test</span></button>
             <button
-                class="btn btn-outline-info btn-lg mr-2"
+                class="btn btn-outline-info btn-lg m-2"
                 @click="cargoCmd('check')"
                 aria-label="Check"
             ><span aria-hidden="true">✔️ Check</span></button>
             
-            <span class="input-group input-group-lg mr-2">
+            <span class="input-group input-group-lg m-2">
                 <span class="input-group-prepend">
                     <span class="input-group-text" id="custom-cmd-label">$</span>
                 </span>
@@ -46,7 +46,7 @@ const cmdMenu = Vue.component("cmd-menu", {
             </span>
 
             <button
-                class="btn btn-outline-secondary btn-lg mr-2"
+                class="btn btn-outline-secondary btn-lg m-2"
                 type="button"
                 data-toggle="collapse"
                 data-target="#options-panel"
