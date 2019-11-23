@@ -1,10 +1,11 @@
 [package]
 name = "cargo-gui"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["eignnx <eignnx@gmail.com>"]
 edition = "2018"
 
 license = "MIT"
+readme = "README.md"
 
 description = "A browser interface for working through rustc errors and running cargo commands."
 
