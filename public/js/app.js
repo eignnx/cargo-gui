@@ -12,8 +12,16 @@ const app = new Vue({
             @custom-cmd="customCmd"
         />
 
+        <div class="row" v-if="cmdRunning">
+            <div class="col text-center my-5">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
         <response-window
-            v-if="cmdStatus !== null || cmdResponse !== null"
+            v-if="!cmdRunning && cmdStatus !== null || cmdResponse !== null"
             :cmdStatus="cmdStatus"
             :cmdResponse="cmdResponse"
             :compilerErrors="errors"
@@ -29,6 +37,7 @@ const app = new Vue({
     data: () => ({
         projectConfig: null,
         releaseBuild: false,
+        cmdRunning: false,
         cmdStatus: null,
         cmdResponse: null,
         errors: null,
@@ -64,6 +73,8 @@ const app = new Vue({
             const cmdText = `cargo ${cmd} ${cargoOpts.join(" ")}`.trim();
             this.history.push(cmdText);
 
+            // Start the loading spinner.
+            this.cmdRunning = true;
 
             fetch("/api/cargo", {
                 method: "POST",
@@ -106,6 +117,9 @@ const app = new Vue({
                     err.message.rendered = ansi_up.ansi_to_html(err.message.rendered);
                     return err;
                 });
+
+            // Stop the loading spinner.
+            this.cmdRunning = false;
         },
     },
 
