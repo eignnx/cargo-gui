@@ -48,7 +48,8 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
     let command = Command::new("cargo")
         .arg(&req.cmd)
         .args(&req.cargo_opts)
-        .arg("--message-format").arg("json")
+        // Output JSON messages that have retain their ansi color information.
+        .args(&["--message-format", "json-diagnostic-rendered-ansi"])
         .current_dir(env::current_dir().unwrap())
         .output()
         .expect("command is able to run");

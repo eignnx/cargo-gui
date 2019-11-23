@@ -30,7 +30,8 @@ const responseWindow = Vue.component("response-window", {
                 <pre
                     class="terminal-output"
                     v-if="compilerErrors !== null && compilerErrors !== []"
-                >{{ currentErrorMessage }}</pre>
+                    v-html="currentErrorMessage"
+                ></pre>
 
                 <pre
                     class="terminal-output"

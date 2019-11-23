@@ -1,0 +1,15 @@
+{
+  "name": "cargo-gui",
+  "version": "0.1.0",
+  "description": "",
+  "main": "js/app.js",
+  "dependencies": {
+    "ansi_up": "^4.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "eignnx",
+  "license": "MIT"
+}

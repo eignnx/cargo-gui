@@ -76,14 +76,21 @@ const app = new Vue({
         },
 
         displayCompilerError(stdout) {
+            const ansi_up = new AnsiUp;
+
             this.errors = stdout
                 .trim()
                 .split("\n")
                 .map(JSON.parse)
-                .map(x => { console.log(x); return x })
                 .filter(err => {
                     return err.message.message !== "aborting due to previous error"
                         && !err.message.message.startsWith("For more information about this error, try");
+                })
+                .map(err => {
+                    console.log("WAS", err.message.rendered);
+                    err.message.rendered = ansi_up.ansi_to_html(err.message.rendered);
+                    console.log("NOW", err.message.rendered);
+                    return err;
                 });
         },
     },
