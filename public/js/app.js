@@ -17,6 +17,7 @@ const app = new Vue({
             :cmdStatus="cmdStatus"
             :cmdResponse="cmdResponse"
             :compilerErrors="errors"
+            :lastCmd="mostRecentCmd"
         />
 
         <cmd-history
@@ -38,6 +39,12 @@ const app = new Vue({
         fetch("/api/project_config")
             .then(resp => resp.json())
             .then(json => this.projectConfig = json);
+    },
+
+    computed: {
+        mostRecentCmd() {
+            return this.history[this.history.length - 1];
+        }
     },
 
     methods: {
