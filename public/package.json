@@ -1,7 +1,11 @@
 {
   "name": "cargo-gui",
   "version": "0.1.0",
-  "description": "",
+  "description": "Browser dashboard for `cargo-gui`",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eignnx/cargo-gui.git"
+  },
   "main": "js/app.js",
   "dependencies": {
     "ansi_up": "^4.0.4"
