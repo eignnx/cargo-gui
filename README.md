@@ -22,9 +22,11 @@ Next, go to your cargo project directory and start the `cargo-gui` server:
 
 ```shell
 $ cd my-cargo-project # go to your project directory
-$ CARGO_GUI_HOME=/path/to/cargo-gui cargo run --manifest-path /path/to/cargo-gui/Cargo.toml
+$ cargo run --manifest-path /path/to/cargo-gui/Cargo.toml
 Your `cargo-gui` app is running at http://localhost:8080/site/index.html
 ```
+
+(Eventually you won't have to pass the `--manifest-path` flag.)
 
 ### Opening the Dashboard
 
@@ -37,8 +39,3 @@ You can click the `Run`, `Build`, `Test`, `Check` buttons to invoke the correspo
 **NOTE:** Currently, `Run` doesn't support streaming output from your executables! If you're trying to run a never-ending task (like a server), you will just never get a response back unless there's an error. This is because `cargo-gui` is waiting for your program to finish before showing you the output. See [this github issue](https://github.com/eignnx/cargo-gui/issues/2) if you have suggestions on how to fix this!
 
 If building, testing, or checking your program results in compilation errors, they will be displayed in a paginated format below. You can used the pagination navbar to see the `Next`, `Previous`, `First` and `Last` compilation errors. You can also use the left and right arrow keys on your keyboard to go to the next and previous errors.
-
-
-## Disclaimer:
-
-Yeah, I know the ENV variable and `--manifest-path` thing are ugly. We'll have to put up with it until there's an actual way to install `cargo-gui`.

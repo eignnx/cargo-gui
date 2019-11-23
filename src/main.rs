@@ -4,7 +4,7 @@ use actix_files as fs;
 use actix_web::{web, App, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
 
-const PORT: u32 = 8080;
+const PORT: u32 = 9345;
 
 #[derive(Deserialize)]
 struct CargoCmd {
@@ -28,14 +28,14 @@ struct ProjectConfig {
 
 fn get_project_config() -> impl Responder {
     println!("project config requested");
-    let cwd = env::current_dir().expect("pwd is accessable");
-    let path = cwd
+    let project_working_dir = env::current_dir().expect("pwd is accessable");
+    let path = project_working_dir
         .to_str()
         .expect("cwd is a valid str")
         .into();
 
     // TODO: Use the Cargo.toml file to get the actual project title.
-    let title = cwd
+    let title = project_working_dir
         .file_name()
         .map(|os_str| os_str.to_str().expect("file name is a valid str"))
         .unwrap_or("/")
@@ -68,9 +68,12 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
 }
 
 fn main() {
-    println!("Your `cargo-gui` app is running at http://localhost:{}/site/index.html", PORT);
-
-    let cargo_gui_home = env::var("CARGO_GUI_HOME").expect("CARGO_GUI_HOME env var was set");
+    // This environment variable is set up during compilation by `build.rs`.
+    let cargo_gui_home = env!("CARGO_GUI_HOME");
+    
+    println!("");
+    println!("  Your `cargo-gui` dashboard is running at http://localhost:{}/site/index.html", PORT);
+    println!("");
 
     #[rustfmt::skip]
     let app = move || {
