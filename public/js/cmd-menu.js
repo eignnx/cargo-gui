@@ -36,16 +36,29 @@ const cmdMenu = Vue.component("cmd-menu", {
                     <button class="btn btn-outline-danger" @click="submitCustomCmd">▶ Exec</button>
                 </span>
             </span>
+
+            <button
+                class="btn btn-outline-secondary btn-lg mr-2"
+                type="button"
+                data-toggle="collapse"
+                data-target="#options-panel"
+                aria-expanded="false"
+                aria-controls="options-panel"
+            >⯆ Options</button>
         </div>
 
-        <div class="form-check form-check-inline mb-4">
-            <input
-                type="checkbox"
-                class="form-check-input"
-                id="release-checkbox"
-                v-model="releaseBuild"
-            />
-            <label class="form-check-label" for="release-checkbox">Release Build?</label>
+        <div class="collapse" id="options-panel">
+            <div class="card card-body">
+                <div class="form-check form-check-inline mb-4">
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="release-checkbox"
+                        v-model="releaseBuild"
+                    />
+                    <label class="form-check-label" for="release-checkbox">Release Build?</label>
+                </div>
+            </div>
         </div>
     </section>
     `,
