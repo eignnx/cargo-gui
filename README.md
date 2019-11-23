@@ -7,30 +7,47 @@ A browser interface for working through rustc errors and running cargo commands.
 
 ### Install
 
-Install from the github repository:
+Install `cargo-gui` from crates.io:
+
+```shell
+$ cargo install cargo-gui
+```
+
+#### [Development Mode]
+
+If you want to contribute to the project, you'll want to install from the github repository instead:
 
 ```shell
 git clone https://github.com/eignnx/cargo-gui.git
-cd cargo-gui
-cargo build
 ```
-(Eventually you should be able to run `cargo install cargo-gui`, but we're not there yet.)
 
 ### Start the Server
 
 Next, go to your cargo project directory and start the `cargo-gui` server:
 
 ```shell
-$ cd my-cargo-project # go to your project directory
-$ cargo run --manifest-path /path/to/cargo-gui/Cargo.toml
-Your `cargo-gui` app is running at http://localhost:8080/site/index.html
+$ cd path/to/my-cargo-project
+$ cargo gui
+
+  Your `cargo-gui` app is running at http://localhost:9345/site/index.html
+
 ```
 
-(Eventually you won't have to pass the `--manifest-path` flag.)
+#### [Development Mode]
+
+If you want to contribute to the project, and have installed from the github repository, start the server like this instead:
+
+```shell
+$ cd path/to/my-cargo-project
+$ cargo run --manifest-path /path/to/cargo-gui/Cargo.toml
+
+  Your `cargo-gui` app is running at http://localhost:9345/site/index.html
+
+```
 
 ### Opening the Dashboard
 
-Now open that link in your web browser: [http://localhost:8080/site/index.html](http://localhost:8080/site/index.html)
+Now open that link in your web browser: [http://localhost:9345/site/index.html](http://localhost:9345/site/index.html)
 
 ### In the Dashboard
 
