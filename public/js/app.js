@@ -13,6 +13,7 @@ const app = new Vue({
         />
 
         <response-window
+            v-if="cmdStatus !== null || cmdResponse !== null"
             :cmdStatus="cmdStatus"
             :cmdResponse="cmdResponse"
             :compilerErrors="errors"
@@ -27,10 +28,10 @@ const app = new Vue({
     data: () => ({
         projectConfig: null,
         releaseBuild: false,
-        cmdStatus: "",
-        cmdResponse: "",
-        history: [],
+        cmdStatus: null,
+        cmdResponse: null,
         errors: null,
+        history: [],
     }),
 
     mounted() {
@@ -48,15 +49,14 @@ const app = new Vue({
 
         cargoCmd([cmd, ...cargoOpts]) {
 
-            // Reset the command status.
-            this.cmdStatus = "...";
+            // Reset the command response, status, and errors.
+            this.cmdResponse = null;
+            this.cmdStatus = null;
+            this.errors = null;
 
-            // Display status while command executes.
             const cmdText = `cargo ${cmd} ${cargoOpts.join(" ")}`.trim();
-            this.cmdResponse = `Running \`\$ ${cmdText}\`...`;
             this.history.push(cmdText);
 
-            this.errors = [];
 
             fetch("/api/cargo", {
                 method: "POST",
