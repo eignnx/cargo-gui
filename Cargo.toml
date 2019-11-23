@@ -3,7 +3,17 @@ name = "cargo-gui"
 version = "0.1.0"
 authors = ["eignnx <eignnx@gmail.com>"]
 edition = "2018"
+
 license = "MIT"
+
+description = "A browser interface for working through rustc errors and running cargo commands."
+
+homepage = "https://github.com/eignnx/cargo-gui"
+documentation = "https://github.com/eignnx/cargo-gui"
+repository = "https://github.com/eignnx/cargo-gui"
+
+keywords = ["cargo", "browser interface", "terminal", "command runner"]
+categories = ["development-tools::cargo-plugins"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
