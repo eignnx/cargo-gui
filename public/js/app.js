@@ -6,19 +6,20 @@ const app = new Vue({
             :title="projectConfig ? projectConfig.title : '...'"
             :path="projectConfig ? projectConfig.path : '...'"
         />
+
         <cmd-menu
             @cargo-cmd="cargoCmd"
             @custom-cmd="customCmd"
-        />
-        <hr>
-        <cmd-history
-            :history="history"
         />
 
         <response-window
             :cmdStatus="cmdStatus"
             :cmdResponse="cmdResponse"
             :compilerErrors="errors"
+        />
+
+        <cmd-history
+            :history="history"
         />
     </main>
     `,
