@@ -10,6 +10,7 @@ const app = new Vue({
         <cmd-menu
             @cargo-cmd="cargoCmd"
             @custom-cmd="customCmd"
+            :cmdRunning="cmdRunning"
         />
 
         <loading-indicator

@@ -1,4 +1,9 @@
 const cmdMenu = Vue.component("cmd-menu", {
+
+    props: {
+        "cmdRunning": Boolean,
+    },
+
     template: `
     <section>
         <div class="row">
@@ -7,21 +12,25 @@ const cmdMenu = Vue.component("cmd-menu", {
                     class="btn btn-outline-danger btn-lg m-2"
                     @click="cargoCmd('run')"
                     aria-label="Run"
+                    :disabled="cmdRunning"
                 ><span aria-hidden="true">▶ Run</span></button>
                 <button
                     class="btn btn-outline-primary btn-lg m-2"
                     @click="cargoCmd('build')"
                     aria-label="Build"
+                    :disabled="cmdRunning"
                 ><span aria-hidden="true">🔨 Build</span></button>
                 <button
                     class="btn btn-outline-success btn-lg m-2"
                     @click="cargoCmd('test')"
                     aria-label="Test"
+                    :disabled="cmdRunning"
                 ><span aria-hidden="true">🧪 Test</span></button>
                 <button
                     class="btn btn-outline-info btn-lg m-2"
                     @click="cargoCmd('check')"
                     aria-label="Check"
+                    :disabled="cmdRunning"
                 ><span aria-hidden="true">✔️ Check</span></button>
                 
                 <span class="input-group input-group-lg m-2">
@@ -42,6 +51,7 @@ const cmdMenu = Vue.component("cmd-menu", {
                             class="btn btn-outline-danger"
                             @click="submitCustomCmd"
                             aria-label="Execute"
+                            :disabled="cmdRunning"
                         ><span aria-hidden="true">▶ Exec</span></button>
                     </span>
                 </span>
