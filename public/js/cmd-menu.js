@@ -58,7 +58,7 @@ const cmdMenu = Vue.component("cmd-menu", {
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-3">
             <div class="col">
                 <div class="collapse" id="options-panel">
                     <div class="card card-body">
