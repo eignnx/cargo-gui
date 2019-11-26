@@ -56,3 +56,6 @@ You can click the `Run`, `Build`, `Test`, `Check` buttons to invoke the correspo
 **NOTE:** Currently, `Run` doesn't support streaming output from your executables! If you're trying to run a never-ending task (like a server), you will just never get a response back unless there's an error. This is because `cargo-gui` is waiting for your program to finish before showing you the output. See [this github issue](https://github.com/eignnx/cargo-gui/issues/2) if you have suggestions on how to fix this!
 
 If building, testing, or checking your program results in compilation errors, they will be displayed in a paginated format below. You can used the pagination navbar to see the `Next`, `Previous`, `First` and `Last` compilation errors. You can also use the left and right arrow keys on your keyboard to go to the next and previous errors.
+
+## Contributing
+Contributions are welcome! Please check out [CONTRIBUTING.md](https://github.com/eignnx/cargo-gui/blob/master/CONTRIBUTING.md) for instructions on how to get involved.
