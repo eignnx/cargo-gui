@@ -56,7 +56,9 @@ const responseWindow = Vue.component("response-window", {
 
     computed: {
         currentErrorMessage() {
-            return this.compilerErrors[this.currentErrorIdx].message.rendered;
+            const err = this.compilerErrors[this.currentErrorIdx];
+            const msg = err.message.rendered;
+            return msg.trim(); // Remove trailing '\n' character.
         },
     },
 
