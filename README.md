@@ -29,7 +29,7 @@ Next, go to your cargo project directory and start the `cargo-gui` server:
 $ cd path/to/my-cargo-project
 $ cargo gui
 
-  Your `cargo-gui` app is running at http://localhost:9345/site/index.html
+  Your `cargo-gui` app is running at http://localhost:9345/
 
 ```
 
@@ -41,13 +41,13 @@ If you want to contribute to the project, and have installed from the github rep
 $ cd path/to/my-cargo-project
 $ cargo run --manifest-path /path/to/cargo-gui/Cargo.toml
 
-  Your `cargo-gui` app is running at http://localhost:9345/site/index.html
+  Your `cargo-gui` app is running at http://localhost:9345/
 
 ```
 
 ### Opening the Dashboard
 
-Now open that link in your web browser: [http://localhost:9345/site/index.html](http://localhost:9345/site/index.html)
+Now open that link in your web browser: [http://localhost:9345/](http://localhost:9345/)
 
 ### In the Dashboard
 

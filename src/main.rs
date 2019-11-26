@@ -80,6 +80,11 @@ fn init_js_app(home: impl AsRef<str>) {
     }
 }
 
+fn index() -> actix_web::Result<fs::NamedFile> {
+    let path = format!("{}/public/index.html", env!("CARGO_GUI_HOME"));
+    Ok(fs::NamedFile::open(path)?)
+}
+
 fn main() {
     // This environment variable is set up during compilation by `build.rs`.
     let cargo_gui_home = env!("CARGO_GUI_HOME");
@@ -87,16 +92,17 @@ fn main() {
     init_js_app(&cargo_gui_home);
     
     println!("");
-    println!("  Your `cargo-gui` dashboard is running at http://localhost:{}/site/index.html", PORT);
+    println!("  Your `cargo-gui` dashboard is running at http://localhost:{}/", PORT);
     println!("");
 
     #[rustfmt::skip]
     let app = move || {
         App::new()
-            .service(fs::Files::new("/site", format!("{}/public", cargo_gui_home)).show_files_listing())
             .service(web::scope("/api")
                 .route("/cargo", web::post().to(run_cargo_cmd))
                 .route("/project_config", web::get().to(get_project_config)))
+            .route("/", web::get().to(index))
+            .service(fs::Files::new("/", format!("{}/public", cargo_gui_home)).show_files_listing())
     };
 
     HttpServer::new(app)
