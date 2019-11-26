@@ -3,8 +3,14 @@ use std::env;
 use actix_files as fs;
 use actix_web::{web, App, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 
 const PORT: u32 = 9345;
+
+#[derive(Debug)]
+struct AppState {
+    home_dir: PathBuf
+}
 
 #[derive(Deserialize)]
 struct CargoCmd {
@@ -67,11 +73,10 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
     serde_json::to_string(&CmdResponse { status, stdout, stderr }).unwrap()
 }
 
-fn init_js_app(home: impl AsRef<str>) {
-    let home = home.as_ref();
+fn init_js_app(home_dir: impl AsRef<Path>) {
     let status = Command::new("npm")
         .arg("install")
-        .current_dir(format!("{}/public", home))
+        .current_dir(home_dir.as_ref().join("public"))
         .status()
         .expect("`npm install` will run successfully");
 
@@ -80,8 +85,8 @@ fn init_js_app(home: impl AsRef<str>) {
     }
 }
 
-fn index() -> actix_web::Result<fs::NamedFile> {
-    let path = format!("{}/public/index.html", env!("CARGO_GUI_HOME"));
+fn index(state: web::Data<AppState>) -> actix_web::Result<fs::NamedFile> {
+    let path = state.home_dir.join("public").join("index.html");
     Ok(fs::NamedFile::open(path)?)
 }
 
@@ -98,6 +103,9 @@ fn main() {
     #[rustfmt::skip]
     let app = move || {
         App::new()
+            .data(AppState {
+                home_dir: cargo_gui_home.clone().into(),
+            })
             .service(web::scope("/api")
                 .route("/cargo", web::post().to(run_cargo_cmd))
                 .route("/project_config", web::get().to(get_project_config)))
