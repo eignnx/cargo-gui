@@ -1,15 +1,15 @@
-use std::process::Command;
-use std::env;
 use actix_files as fs;
 use actix_web::{web, App, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 const PORT: u32 = 9345;
 
 #[derive(Debug)]
 struct AppState {
-    home_dir: PathBuf
+    home_dir: PathBuf,
 }
 
 #[derive(Deserialize)]
@@ -59,18 +59,23 @@ fn run_cargo_cmd(req: web::Json<CargoCmd>) -> impl Responder {
         .current_dir(env::current_dir().unwrap())
         .output()
         .expect("command is able to run");
-    
+
     let stdout = String::from_utf8_lossy(&command.stdout).to_string();
     let stderr = String::from_utf8_lossy(&command.stderr).to_string();
-    
     let opts: String = req.cargo_opts.as_slice().join(" ");
     let cmd: String = format!("cargo {} {}", req.cmd, opts).trim().into();
+
     println!("ran command `{}`", cmd);
     println!("got stdout `{}`", stdout);
     println!("got stderr `{}`", stderr);
 
     let status = command.status.code().unwrap();
-    serde_json::to_string(&CmdResponse { status, stdout, stderr }).unwrap()
+    serde_json::to_string(&CmdResponse {
+        status,
+        stdout,
+        stderr,
+    })
+    .unwrap()
 }
 
 fn init_js_app(home_dir: impl AsRef<Path>) {
@@ -95,9 +100,12 @@ fn main() {
     let cargo_gui_home = env!("CARGO_GUI_HOME");
 
     init_js_app(&cargo_gui_home);
-    
+
     println!("");
-    println!("  Your `cargo-gui` dashboard is running at http://localhost:{}/", PORT);
+    println!(
+        "  Your `cargo-gui` dashboard is running at http://localhost:{}/",
+        PORT
+    );
     println!("");
 
     #[rustfmt::skip]
