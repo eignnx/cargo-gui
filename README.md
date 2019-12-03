@@ -1,7 +1,7 @@
 # cargo-gui
 A browser interface for working through rustc errors and running cargo commands.
 
-![sample image](https://github.com/eignnx/cargo-gui/blob/master/test-screenshot.png)
+![[Example Image](https://github.com/eignnx/cargo-gui/blob/master/test-screenshot.png)](https://github.com/eignnx/cargo-gui/blob/master/test-screenshot.png)
 
 ## Usage
 
@@ -29,8 +29,7 @@ Next, go to your cargo project directory and start the `cargo-gui` server:
 $ cd path/to/my-cargo-project
 $ cargo gui
 
-  Your `cargo-gui` app is running at http://localhost:9345/
-
+Server is listening on: http://127.0.0.1:9345
 ```
 
 #### [Development Mode]
@@ -41,8 +40,7 @@ If you want to contribute to the project, and have installed from the github rep
 $ cd path/to/my-cargo-project
 $ cargo run --manifest-path /path/to/cargo-gui/Cargo.toml
 
-  Your `cargo-gui` app is running at http://localhost:9345/
-
+Server is listening on: http://127.0.0.1:9345
 ```
 
 ### Opening the Dashboard
