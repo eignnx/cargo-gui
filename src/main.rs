@@ -120,35 +120,6 @@ async fn start_running_cargo_cmd(mut req: Req) -> String {
     .unwrap()
 }
 
-// async fn run_cargo_cmd(mut req: Req) -> String {
-//     let cargo_cmd: CargoCmd = req.body_json().await.unwrap();
-//     let command = Command::new("cargo")
-//         .arg(&cargo_cmd.cmd)
-//         .args(&cargo_cmd.cargo_opts)
-//         // Output JSON messages that have retain their ansi color information.
-//         .args(&["--message-format", "json-diagnostic-rendered-ansi"])
-//         .current_dir(env::current_dir().unwrap())
-//         .output()
-//         .expect("command is able to run");
-
-//     let stdout = String::from_utf8_lossy(&command.stdout).to_string();
-//     let stderr = String::from_utf8_lossy(&command.stderr).to_string();
-//     let opts: String = cargo_cmd.cargo_opts.as_slice().join(" ");
-//     let cmd: String = format!("cargo {} {}", cargo_cmd.cmd, opts).trim().into();
-
-//     println!("ran command `{}`", cmd);
-//     println!("got stdout `{}`", stdout);
-//     println!("got stderr `{}`", stderr);
-
-//     let status = command.status.code().unwrap();
-//     serde_json::to_string(&CmdResponse {
-//         status,
-//         stdout,
-//         stderr,
-//     })
-//     .unwrap()
-// }
-
 fn init_js_app(home_dir: impl AsRef<Path>) {
     let status = Command::new("npm")
         .arg("install")
@@ -173,10 +144,9 @@ impl tide::IntoResponse for LineMsg {
     }
 }
 
-use std::ops::DerefMut;
-
 async fn get_line(mtx: Arc<Mutex<Option<IoStream>>>) -> LineMsg {
     let mut guard = mtx.lock().await;
+    use std::ops::DerefMut;
     if let Some(stream) = guard.deref_mut() {
         match stream.next().await {
             Some(line) => LineMsg::Line(line),
