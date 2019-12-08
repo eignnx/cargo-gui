@@ -3,7 +3,6 @@ use std::path::{Path, PathBuf};
 use std::pin::Pin;
 use std::process::{Command, Stdio};
 
-use async_std::prelude::*;
 use async_std::stream::{Stream, StreamExt};
 use async_std::sync::{Arc, Mutex};
 use serde::{self, Deserialize, Serialize};
