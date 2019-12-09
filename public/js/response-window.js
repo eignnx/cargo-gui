@@ -8,6 +8,8 @@ const responseWindow = Vue.component("response-window", {
 
   template: `
     <section>
+
+
         <div class="row">
             <div class="col">
                 <div
@@ -21,14 +23,70 @@ const responseWindow = Vue.component("response-window", {
             </div>
         </div>
 
+<div class="row">
+  <div class="col">
+    <nav>
+      <div class="nav nav-tabs" id="compiler-output-tabs" role="tablist">
+        <a
+          class="nav-item nav-link active"
+          id="compiler-messages-tab"
+          data-toggle="tab"
+          href="#compiler-messages-panel"
+          role="tab"
+          aria-controls="compiler-messages-panel"
+          aria-selected="true"
+        >Compiler Messages <span class="badge badge-primary">{{ compilerArtifacts.length }}</span></a>
+        <a
+          class="nav-item nav-link"
+          id="compiler-errors-tab"
+          data-toggle="tab"
+          href="#compiler-errors-panel"
+          role="tab"
+          aria-controls="compiler-error-panel"
+          aria-selected="false"
+        >Compiler Errors
+          <span
+            class="badge badge-danger"
+            v-if="errorMessages.length !== 0"
+          >{{ errorMessages.length }}</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="tab-content" id="compiler-output-panels">
+      <div
+        class="tab-pane fade show active"
+        id="compiler-messages-panel"
+        role="tabpanel"
+        aria-labelledby="compiler-messages-tab"
+      >
+
         <div class="row">
-            <div class="col">
-                <pagination-nav
-                    ariaLabel="Compilation Errors Navigator"
-                    :itemCount="errorMessages.length"
-                    v-model="currentErrorIdx"
-                />
-            </div>
+          <div class="col">
+            <h3>Compiler Artifacts</h3>
+            <pre
+              class="terminal-output"
+              v-html="compilerArtifacts.join('\\n')"
+            ></pre>
+          </div>
+        </div>
+
+      </div>
+      <div
+        class="tab-pane fade"
+        id="compiler-errors-panel"
+        role="tabpanel"
+        aria-labelledby="compiler-errors-tab"
+      >
+
+        <div class="row">
+          <div class="col">
+            <pagination-nav
+              ariaLabel="Compilation Errors Navigator"
+              :itemCount="errorMessages.length"
+              v-model="currentErrorIdx"
+            />
+          </div>
         </div>
 
         <div class="row">
@@ -40,15 +98,12 @@ const responseWindow = Vue.component("response-window", {
           </div>
         </div>
 
-        <div class="row">
-          <div class="col">
-            <h3>Compiler Artifacts</h3>
-            <pre
-              class="terminal-output"
-              v-html="compilerArtifacts"
-            ></pre>
-          </div>
-        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
     </section>
     `,
@@ -71,20 +126,17 @@ const responseWindow = Vue.component("response-window", {
     },
 
     compilerArtifacts() {
-      return this.stdoutLines
-        .map(safeJsonParse)
-        .flatMap(msg => {
-          // TODO: Revisit this. Research actual `reason`s, print + format like
-          // `rustc`.
-          if (msg.reason === "compiler-artifact") {
-            return [`  Compiling ${msg.package_id}`];
-          } else if (msg.reason === "build-script-executed") {
-            return [`   Building ${msg.package_id}`];
-          } else {
-            return [];
-          }
-        })
-        .join("\n");
+      return this.stdoutLines.map(safeJsonParse).flatMap(msg => {
+        // TODO: Revisit this. Research actual `reason`s, print + format like
+        // `rustc`.
+        if (msg.reason === "compiler-artifact") {
+          return [`  Compiling ${msg.package_id}`];
+        } else if (msg.reason === "build-script-executed") {
+          return [`   Building ${msg.package_id}`];
+        } else {
+          return [];
+        }
+      });
     }
   },
 
