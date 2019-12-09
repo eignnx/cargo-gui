@@ -54,13 +54,14 @@ impl StaticRootDir for AppState {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct CargoCmd {
     cmd: String,
-    #[serde(rename = "cargoOpts")]
     cargo_opts: Vec<String>,
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 struct CmdResponse {
     status: i32,
     stdout: String,
@@ -68,6 +69,7 @@ struct CmdResponse {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 struct ProjectConfig {
     title: String,
     path: String,
@@ -165,6 +167,7 @@ fn init_js_app(home_dir: impl AsRef<Path>) {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 enum LineMsg {
     Line(String),
     End,
@@ -214,7 +217,8 @@ impl tide::IntoResponse for CmdStatus {
 async fn get_cmd_status(req: Req) -> CmdStatus {
     let state = req.state();
     let mut guard = state.cmd_status.lock().await;
-    guard.take().unwrap()
+    dbg!();
+    guard.take().unwrap_or(CmdStatus(9999))
 }
 
 #[async_std::main]
