@@ -7,109 +7,109 @@ const responseWindow = Vue.component("response-window", {
   ],
 
   template: `
-    <section>
+<section>
 
+  <div class="row">
+      <div class="col">
+          <div
+              class="alert alert-danger"
+              role="alert"
+              v-if="errorMessages.length !== 0"
+          >
+              <h4 class="alert-heading">Compiler Error!</h4>
+              <p>The command <strong class="text-monospace">{{ lastCmd }}</strong> exited with status code <strong class="text-monospace">{{ cmdStatus }}</strong>, and there are <strong class="text-monospace">{{ errorMessages.length }}</strong> errors!</p>
+          </div>
+      </div>
+  </div>
 
-        <div class="row">
+  <div class="row">
+    <div class="col">
+      <nav class="mb-4">
+        <div class="nav nav-tabs" id="compiler-output-tabs" role="tablist">
+          <a
+            id="compiler-messages-tab"
+            :class="compilerMessagesTabClasses"
+            @click="currentTab = 'compiler-messages'"
+            href="#compiler-messages-panel"
+            data-toggle="tab"
+            role="tab"
+            aria-controls="compiler-messages-panel"
+            :aria-selected="currentTab === 'compiler-messages'"
+          >Compiler Messages <span class="badge badge-primary">{{ compilerArtifacts.length }}</span></a>
+          <a
+            id="compiler-errors-tab"
+            :class="compilerErrorsTabClasses"
+            @click="currentTab = 'compiler-errors'"
+            href="#compiler-errors-panel"
+            data-toggle="tab"
+            role="tab"
+            aria-controls="compiler-error-panel"
+            :aria-selected="currentTab === 'compiler-errors'"
+          >Compiler Errors
+            <span
+              class="badge badge-danger"
+              v-if="errorMessages.length !== 0"
+            >{{ errorMessages.length }}</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="tab-content" id="compiler-output-panels">
+        <div
+          :class="compilerMessagesPanelClasses"
+          id="compiler-messages-panel"
+          role="tabpanel"
+          aria-labelledby="compiler-messages-tab"
+        >
+
+          <div class="row">
             <div class="col">
-                <div
-                    class="alert alert-danger"
-                    role="alert"
-                    v-if="errorMessages.length !== 0"
-                >
-                    <h4 class="alert-heading">Compiler Error!</h4>
-                    <p>The command <strong class="text-monospace">{{ lastCmd }}</strong> exited with status code <strong class="text-monospace">{{ cmdStatus }}</strong>, and there are <strong class="text-monospace">{{ errorMessages.length }}</strong> errors!</p>
-                </div>
+              <h3>Compiler Artifacts</h3>
+              <pre
+                class="terminal-output"
+                v-html="compilerArtifacts.join('\\n')"
+              ></pre>
             </div>
-        </div>
-
-<div class="row">
-  <div class="col">
-    <nav>
-      <div class="nav nav-tabs" id="compiler-output-tabs" role="tablist">
-        <a
-          class="nav-item nav-link active"
-          id="compiler-messages-tab"
-          data-toggle="tab"
-          href="#compiler-messages-panel"
-          role="tab"
-          aria-controls="compiler-messages-panel"
-          aria-selected="true"
-        >Compiler Messages <span class="badge badge-primary">{{ compilerArtifacts.length }}</span></a>
-        <a
-          class="nav-item nav-link"
-          id="compiler-errors-tab"
-          data-toggle="tab"
-          href="#compiler-errors-panel"
-          role="tab"
-          aria-controls="compiler-error-panel"
-          aria-selected="false"
-        >Compiler Errors
-          <span
-            class="badge badge-danger"
-            v-if="errorMessages.length !== 0"
-          >{{ errorMessages.length }}</span>
-        </a>
-      </div>
-    </nav>
-
-    <div class="tab-content" id="compiler-output-panels">
-      <div
-        class="tab-pane fade show active"
-        id="compiler-messages-panel"
-        role="tabpanel"
-        aria-labelledby="compiler-messages-tab"
-      >
-
-        <div class="row">
-          <div class="col">
-            <h3>Compiler Artifacts</h3>
-            <pre
-              class="terminal-output"
-              v-html="compilerArtifacts.join('\\n')"
-            ></pre>
           </div>
+
         </div>
+        <div
+          :class="compilerErrorsPanelClasses"
+          id="compiler-errors-panel"
+          role="tabpanel"
+          aria-labelledby="compiler-errors-tab"
+        >
 
-      </div>
-      <div
-        class="tab-pane fade"
-        id="compiler-errors-panel"
-        role="tabpanel"
-        aria-labelledby="compiler-errors-tab"
-      >
-
-        <div class="row">
-          <div class="col">
-            <pagination-nav
-              ariaLabel="Compilation Errors Navigator"
-              :itemCount="errorMessages.length"
-              v-model="currentErrorIdx"
-            />
+          <div class="row">
+            <div class="col">
+              <pagination-nav
+                ariaLabel="Compilation Errors Navigator"
+                :itemCount="errorMessages.length"
+                v-model="currentErrorIdx"
+              />
+            </div>
           </div>
-        </div>
 
-        <div class="row">
-          <div class="col">
-            <pre
-              class="terminal-output"
-              v-html="currentErrorMessage"
-            ></pre>
+          <div class="row">
+            <div class="col">
+              <pre
+                class="terminal-output"
+                v-html="currentErrorMessage"
+              ></pre>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-
-
-    </section>
+</section>
     `,
 
   data: () => ({
-    currentErrorIdx: 0
+    currentErrorIdx: 0,
+    currentTab: "compiler-errors"
   }),
 
   computed: {
@@ -137,6 +137,40 @@ const responseWindow = Vue.component("response-window", {
           return [];
         }
       });
+    },
+
+    compilerMessagesTabClasses() {
+      return {
+        "nav-item": true,
+        "nav-link": true,
+        active: this.currentTab === "compiler-messages"
+      };
+    },
+
+    compilerErrorsTabClasses() {
+      return {
+        "nav-item": true,
+        "nav-link": true,
+        active: this.currentTab === "compiler-errors"
+      };
+    },
+
+    compilerMessagesPanelClasses() {
+      return {
+        "tab-pane": true,
+        fade: true,
+        show: this.currentTab === "compiler-messages",
+        active: this.currentTab === "compiler-messages"
+      };
+    },
+
+    compilerErrorsPanelClasses() {
+      return {
+        "tab-pane": true,
+        fade: true,
+        show: this.currentTab === "compiler-errors",
+        active: this.currentTab === "compiler-errors"
+      };
     }
   },
 
