@@ -1,10 +1,9 @@
 const cmdMenu = Vue.component("cmd-menu", {
+  props: {
+    cmdRunning: Boolean
+  },
 
-    props: {
-        "cmdRunning": Boolean,
-    },
-
-    template: `
+  template: `
     <section>
         <div class="row">
             <div class="col form-inline mb-4">
@@ -12,7 +11,7 @@ const cmdMenu = Vue.component("cmd-menu", {
                     class="btn btn-outline-danger btn-lg m-2"
                     @click="cargoCmd('run')"
                     aria-label="Run"
-                    :disabled="cmdRunning"
+                    :disabled="cmdRunning || true"
                 ><span aria-hidden="true">▶ Run</span></button>
                 <button
                     class="btn btn-outline-primary btn-lg m-2"
@@ -24,7 +23,7 @@ const cmdMenu = Vue.component("cmd-menu", {
                     class="btn btn-outline-success btn-lg m-2"
                     @click="cargoCmd('test')"
                     aria-label="Test"
-                    :disabled="cmdRunning"
+                    :disabled="cmdRunning || true"
                 ><span aria-hidden="true">🧪 Test</span></button>
                 <button
                     class="btn btn-outline-info btn-lg m-2"
@@ -51,7 +50,7 @@ const cmdMenu = Vue.component("cmd-menu", {
                             class="btn btn-outline-danger"
                             @click="submitCustomCmd"
                             aria-label="Execute"
-                            :disabled="cmdRunning"
+                            :disabled="cmdRunning || true"
                         ><span aria-hidden="true">▶ Exec</span></button>
                     </span>
                 </span>
@@ -88,23 +87,21 @@ const cmdMenu = Vue.component("cmd-menu", {
     </section>
     `,
 
-    data: () => ({
-        customCmd: "",
-        releaseBuild: false,
-    }),
+  data: () => ({
+    customCmd: "",
+    releaseBuild: false
+  }),
 
-    methods: {
-        cargoCmd(cmd) {
-            const cargoOpts = [
-                ...(this.releaseBuild ? [`--release`] : []),
-            ];
+  methods: {
+    cargoCmd(cmd) {
+      const cargoOpts = [...(this.releaseBuild ? [`--release`] : [])];
 
-            this.$emit("cargo-cmd", [cmd, ...cargoOpts]);
-        },
-
-        submitCustomCmd() {
-            this.$emit("custom-cmd", this.customCmd)
-            this.customCmd = "";
-        },
+      this.$emit("cargo-cmd", [cmd, ...cargoOpts]);
     },
+
+    submitCustomCmd() {
+      this.$emit("custom-cmd", this.customCmd);
+      this.customCmd = "";
+    }
+  }
 });
