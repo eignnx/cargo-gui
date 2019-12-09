@@ -5,6 +5,7 @@ use std::process::{Command, Stdio};
 
 use async_std::stream::{Stream, StreamExt};
 use async_std::sync::{Arc, Mutex};
+use async_std::task;
 use serde::{self, Deserialize, Serialize};
 use tide_naive_static_files::{serve_static_files, StaticRootDir};
 
@@ -16,6 +17,7 @@ struct AppState {
     home_dir: PathBuf,
     cmd_stdout: Arc<Mutex<Option<IoStream>>>,
     cmd_stderr: Arc<Mutex<Option<IoStream>>>,
+    cmd_status: Arc<Mutex<Option<CmdStatus>>>,
 }
 
 impl AppState {
@@ -24,6 +26,23 @@ impl AppState {
             home_dir,
             cmd_stdout: Arc::new(Mutex::new(None)),
             cmd_stderr: Arc::new(Mutex::new(None)),
+            cmd_status: Arc::new(Mutex::new(None)),
+        }
+    }
+
+    // TODO: analyse of potential deadlock.
+    async fn reset_cmd(&self) {
+        { 
+            let mut guard = self.cmd_stdout.lock().await;
+            *guard = None;
+        }
+        { 
+            let mut guard = self.cmd_stderr.lock().await;
+            *guard = None;
+        }
+        {
+            let mut guard = self.cmd_status.lock().await;
+            *guard = None;
         }
     }
 }
@@ -93,9 +112,14 @@ async fn register_cmd_stdio(
     *guard = Some(Box::pin(stream));
 }
 
-async fn start_running_cargo_cmd(mut req: Req) -> String {
+async fn start_running_cargo_cmd(mut req: Req) -> tide::Response {
+    {
+        let state = req.state();
+        state.reset_cmd().await;
+    }
+
     let cargo_cmd: CargoCmd = req.body_json().await.unwrap();
-    let child = Command::new("cargo")
+    let mut child = Command::new("cargo")
         .arg(&cargo_cmd.cmd)
         .args(&cargo_cmd.cargo_opts)
         // Output JSON messages that have retain their ansi color information.
@@ -107,16 +131,25 @@ async fn start_running_cargo_cmd(mut req: Req) -> String {
         .unwrap();
 
     let cmd_stdout = req.state().cmd_stdout.clone();
-    register_cmd_stdio(cmd_stdout, child.stdout.unwrap()).await;
+    register_cmd_stdio(cmd_stdout, child.stdout.take().unwrap()).await;
     let cmd_stderr = req.state().cmd_stderr.clone();
-    register_cmd_stdio(cmd_stderr, child.stderr.unwrap()).await;
+    register_cmd_stdio(cmd_stderr, child.stderr.take().unwrap()).await;
 
-    serde_json::to_string(&CmdResponse {
-        status: 101,
-        stdout: "{\"msg\": \"coming soon dawg\"}".into(),
-        stderr: "{\"msg\": \"coming soon dawg\"}".into(),
-    })
-    .unwrap()
+    // Spawn a new thread (1) and a new task (2) to wait for the process to
+    // finish (1) and for the `AppState.cmd_status` mutex to lock (2). We need
+    // to do these asynchronously so that this Endpoint function returns
+    // immediately.
+    task::spawn(async move {
+        let handle = task::spawn_blocking(move || {
+            child.wait_with_output().unwrap().status.code().unwrap()
+        }).await;
+
+        let mtx = &req.state().cmd_status;
+        let mut guard = mtx.lock().await;
+        *guard = Some(CmdStatus(handle));
+    });
+
+    tide::Response::new(200)
 }
 
 fn init_js_app(home_dir: impl AsRef<Path>) {
@@ -169,6 +202,21 @@ async fn get_stderr_line(req: Req) -> LineMsg {
     get_line(arc).await
 }
 
+#[derive(Serialize)]
+struct CmdStatus(i32);
+
+impl tide::IntoResponse for CmdStatus {
+    fn into_response(self) -> tide::Response {
+        tide::Response::new(200).body_json(&self).unwrap()
+    }
+}
+
+async fn get_cmd_status(req: Req) -> CmdStatus {
+    let state = req.state();
+    let mut guard = state.cmd_status.lock().await;
+    guard.take().unwrap()
+}
+
 #[async_std::main]
 async fn main() {
     // This environment variable is set up during compilation by `build.rs`.
@@ -182,6 +230,7 @@ async fn main() {
     app.at("/api/project_config").get(get_project_config);
     app.at("/api/stdout_line").get(get_stdout_line);
     app.at("/api/stderr_line").get(get_stderr_line);
+    app.at("/api/cmd_status").get(get_cmd_status);
     app.at("/").get(tide::redirect("/index.html"));
     app.at("/*")
         .get(|req| async { serve_static_files(req).await.unwrap() });
