@@ -55,7 +55,7 @@ const app = new Vue({
     },
 
     cmdRunning() {
-      return !this.stdoutLinesDone && !this.stderrLinesDone;
+      return !this.stdoutLinesDone || !this.stderrLinesDone;
     }
   },
 
@@ -105,7 +105,7 @@ const app = new Vue({
         .then(json => {
           if (json.hasOwnProperty("line")) {
             this[`${stream_name}Lines`].push(json["line"]);
-            this.readNextLine(stream_name);
+            setTimeout(() => this.readNextLine(stream_name), 0);
           } else if (json === "end") {
             this[`${stream_name}LinesDone`] = true;
             if (!this.cmdRunning) {

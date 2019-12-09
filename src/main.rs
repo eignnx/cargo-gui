@@ -205,7 +205,7 @@ async fn get_stderr_line(req: Req) -> LineMsg {
     get_line(arc).await
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 struct CmdStatus(i32);
 
 impl tide::IntoResponse for CmdStatus {
@@ -217,7 +217,6 @@ impl tide::IntoResponse for CmdStatus {
 async fn get_cmd_status(req: Req) -> CmdStatus {
     let state = req.state();
     let mut guard = state.cmd_status.lock().await;
-    dbg!();
     guard.take().unwrap_or(CmdStatus(9999))
 }
 
