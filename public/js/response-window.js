@@ -63,7 +63,8 @@ const responseWindow = Vue.component("response-window", {
     },
 
     errorMessages() {
-      return this.stderrLines
+      const err_lines = this.stdoutLines.concat(this.stderrLines);
+      return err_lines
         .map(safeJsonParse)
         .filter(json => json.reason === "compiler-message")
         .map(cleanJsonMessage);
@@ -72,8 +73,17 @@ const responseWindow = Vue.component("response-window", {
     compilerArtifacts() {
       return this.stdoutLines
         .map(safeJsonParse)
-        .filter(msg => msg.reason === "compiler-artifact")
-        .map(msg => `  Compiling ${msg.package_id}`)
+        .flatMap(msg => {
+          // TODO: Revisit this. Research actual `reason`s, print + format like
+          // `rustc`.
+          if (msg.reason === "compiler-artifact") {
+            return [`  Compiling ${msg.package_id}`];
+          } else if (msg.reason === "build-script-executed") {
+            return [`   Building ${msg.package_id}`];
+          } else {
+            return [];
+          }
+        })
         .join("\n");
     }
   },
