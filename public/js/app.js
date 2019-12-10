@@ -105,7 +105,7 @@ const app = new Vue({
         .then(json => {
           if (json.hasOwnProperty("line")) {
             this[`${stream_name}Lines`].push(json["line"]);
-            setTimeout(() => this.readNextLine(stream_name), 0);
+            this.readNextLine(stream_name);
           } else if (json === "end") {
             this[`${stream_name}LinesDone`] = true;
             if (!this.cmdRunning) {
