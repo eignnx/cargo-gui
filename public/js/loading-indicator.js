@@ -5,6 +5,7 @@ const loadingIndicator = Vue.component("loading-indicator", {
             <button
                 class="btn btn-outline-secondary btn-lg"
                 @click="cancel"
+                disabled
             >Cancel (^C)</button>
         </div>
 
