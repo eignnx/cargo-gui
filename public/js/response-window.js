@@ -19,6 +19,15 @@ const responseWindow = Vue.component("response-window", {
               <h4 class="alert-heading">Compiler Error!</h4>
               <p>The command <strong class="text-monospace">{{ lastCmd }}</strong> exited with status code <strong class="text-monospace">{{ cmdStatus }}</strong>, and there are <strong class="text-monospace">{{ errorMessages.length }}</strong> errors!</p>
           </div>
+
+          <div
+              class="alert alert-success"
+              role="alert"
+              v-if="cmdStatus !== null && errorMessages.length === 0"
+          >
+              <h4 class="alert-heading">Success!</h4>
+              <p>The command <strong class="text-monospace">{{ lastCmd }}</strong> exited successfully with status code <strong class="text-monospace">{{ cmdStatus }}</strong>.</p>
+          </div>
       </div>
   </div>
 
@@ -109,7 +118,7 @@ const responseWindow = Vue.component("response-window", {
 
   data: () => ({
     currentErrorIdx: 0,
-    currentTab: "compiler-errors"
+    currentTab: "compiler-messages"
   }),
 
   computed: {
@@ -172,6 +181,14 @@ const responseWindow = Vue.component("response-window", {
         show: this.currentTab === "compiler-errors",
         active: this.currentTab === "compiler-errors"
       };
+    }
+  },
+
+  methods: {
+    checkForIncomingErrors() {
+      if (this.errorMessages !== null && this.errorMessages.length !== 0) {
+        this.currentTab = "compiler-errors";
+      }
     }
   },
 

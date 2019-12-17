@@ -24,6 +24,7 @@ const app = new Vue({
             :stdoutLines="stdoutLines"
             :stderrLines="stderrLines"
             :lastCmd="mostRecentCmd"
+            ref="responseWindow"
         />
 
         <cmd-history
@@ -121,6 +122,9 @@ const app = new Vue({
         .then(resp => resp.json())
         .then(code => {
           this.cmdStatus = code;
+          setTimeout(() => {
+            this.$refs.responseWindow.checkForIncomingErrors();
+          }, 0);
         });
     },
 
