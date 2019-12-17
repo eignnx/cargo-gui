@@ -30,13 +30,13 @@ impl AppState {
         }
     }
 
-    // TODO: analyse of potential deadlock.
+    // TODO: analyse for potential deadlock.
     async fn reset_cmd(&self) {
-        { 
+        {
             let mut guard = self.cmd_stdout.lock().await;
             *guard = None;
         }
-        { 
+        {
             let mut guard = self.cmd_stderr.lock().await;
             *guard = None;
         }
@@ -53,7 +53,7 @@ impl StaticRootDir for AppState {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 struct CargoCmd {
     cmd: String,
@@ -142,13 +142,15 @@ async fn start_running_cargo_cmd(mut req: Req) -> tide::Response {
     // to do these asynchronously so that this Endpoint function returns
     // immediately.
     task::spawn(async move {
-        let handle = task::spawn_blocking(move || {
-            child.wait_with_output().unwrap().status.code().unwrap()
-        }).await;
+        let status = task::spawn_blocking(move || {
+            let handle = child.wait_with_output().unwrap();
+            handle.status.code().unwrap()
+        })
+        .await;
 
         let mtx = &req.state().cmd_status;
         let mut guard = mtx.lock().await;
-        *guard = Some(CmdStatus(handle));
+        *guard = Some(CmdStatus(status));
     });
 
     tide::Response::new(200)
@@ -166,7 +168,7 @@ fn init_js_app(home_dir: impl AsRef<Path>) {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 enum LineMsg {
     Line(String),
@@ -201,7 +203,7 @@ async fn get_stdout_line(req: Req) -> LineMsg {
 }
 
 async fn get_stderr_line(req: Req) -> LineMsg {
-    let arc = req.state().cmd_stdout.clone();
+    let arc = req.state().cmd_stderr.clone();
     get_line(arc).await
 }
 

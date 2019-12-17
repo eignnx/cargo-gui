@@ -124,33 +124,33 @@ const app = new Vue({
         });
     },
 
-    displayCompilerError(stdout) {
-      const ansi_up = new AnsiUp();
-      this.errors = stdout
-        .trim()
-        .split("\n")
-        .map(JSON.parse)
-        .filter(err => {
-          return (
-            // Skip dependency build messages. Only keep errors.
-            err.reason &&
-            err.reason === "compiler-message" &&
-            // Skip these specfic messages.
-            err.message &&
-            !err.message.message.startsWith("aborting due to") &&
-            !err.message.message.startsWith(
-              "For more information about this error, try"
-            )
-          );
-        })
-        .map(err => {
-          err.message.rendered = ansi_up.ansi_to_html(err.message.rendered);
-          return err;
-        });
+    // displayCompilerError(stdout) {
+    //   const ansi_up = new AnsiUp();
+    //   this.errors = stdout
+    //     .trim()
+    //     .split("\n")
+    //     .map(JSON.parse)
+    //     .filter(err => {
+    //       return (
+    //         // Skip dependency build messages. Only keep errors.
+    //         err.reason &&
+    //         err.reason === "compiler-message" &&
+    //         // Skip these specfic messages.
+    //         err.message &&
+    //         !err.message.message.startsWith("aborting due to") &&
+    //         !err.message.message.startsWith(
+    //           "For more information about this error, try"
+    //         )
+    //       );
+    //     })
+    //     .map(err => {
+    //       err.message.rendered = ansi_up.ansi_to_html(err.message.rendered);
+    //       return err;
+    //     });
 
-      // Stop the loading spinner.
-      this.cmdRunning = false;
-    },
+    //   // Stop the loading spinner.
+    //   this.cmdRunning = false;
+    // },
 
     cancelCmd() {
       console.log("cancelled!");

@@ -35,7 +35,7 @@ const responseWindow = Vue.component("response-window", {
             role="tab"
             aria-controls="compiler-messages-panel"
             :aria-selected="currentTab === 'compiler-messages'"
-          >Compiler Messages <span class="badge badge-primary">{{ compilerArtifacts.length }}</span></a>
+          >Compiler Messages <span class="badge badge-primary">{{ compilerMessages.length }}</span></a>
           <a
             id="compiler-errors-tab"
             :class="compilerErrorsTabClasses"
@@ -64,10 +64,10 @@ const responseWindow = Vue.component("response-window", {
 
           <div class="row">
             <div class="col">
-              <h3>Compiler Artifacts</h3>
+              <h3>Compiler Messages</h3>
               <pre
                 class="terminal-output"
-                v-html="compilerArtifacts.join('\\n')"
+                v-html="compilerMessages.join('\\n')"
               ></pre>
             </div>
           </div>
@@ -118,25 +118,26 @@ const responseWindow = Vue.component("response-window", {
     },
 
     errorMessages() {
-      const err_lines = this.stdoutLines.concat(this.stderrLines);
-      return err_lines
+      return this.stdoutLines
+        .filter(line => !abortRegex.test(line))
+        .filter(line => !explainRegex.test(line))
         .map(safeJsonParse)
         .filter(json => json.reason === "compiler-message")
         .map(cleanJsonMessage);
     },
 
-    compilerArtifacts() {
-      return this.stdoutLines.map(safeJsonParse).flatMap(msg => {
-        // TODO: Revisit this. Research actual `reason`s, print + format like
-        // `rustc`.
-        if (msg.reason === "compiler-artifact") {
-          return [`  Compiling ${msg.package_id}`];
-        } else if (msg.reason === "build-script-executed") {
-          return [`   Building ${msg.package_id}`];
-        } else {
-          return [];
-        }
-      });
+    // TODO: Display this info to user somehow (not as one of the `errorMessages`).
+    cargoCmdAborted() {
+      return this.stdoutLines.some(line => abortRegex.test(line));
+    },
+
+    // TODO: Display this info to user somehow (not as one of the `errorMessages`).
+    cargoCmdExplained() {
+      return this.stdoutLines.some(line => explainRegex.test(line));
+    },
+
+    compilerMessages() {
+      return this.stderrLines;
     },
 
     compilerMessagesTabClasses() {
@@ -192,6 +193,10 @@ function safeJsonParse(str) {
   try {
     return JSON.parse(str);
   } catch (e) {
-    console.err("JSON PARSE ERROR:", e, str);
+    console.log(str);
+    console.error("JSON PARSE ERROR:", e, str);
   }
 }
+
+const abortRegex = /.*aborting due to \d+ previous error(s?).*$/;
+const explainRegex = /For more information about this error, try `rustc --explain E\d+`./;
