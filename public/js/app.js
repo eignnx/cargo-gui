@@ -122,9 +122,13 @@ const app = new Vue({
         .then(resp => resp.json())
         .then(code => {
           this.cmdStatus = code;
-          setTimeout(() => {
-            this.$refs.responseWindow.checkForIncomingErrors();
-          }, 0);
+          // Altering `this.cmdStatus` makes the `response-window` element appear after the state is
+          // updated. Once it appears, we need to tell it to check for errors so that the
+          // compiler-errors tab can be switched to.
+          return defer();
+        })
+        .then(x => {
+          this.$refs.responseWindow.maybeSwitchToErrorsTab();
         });
     },
 
@@ -169,3 +173,7 @@ const app = new Vue({
     responseWindow
   }
 });
+
+function defer() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}

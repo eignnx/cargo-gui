@@ -185,7 +185,7 @@ const responseWindow = Vue.component("response-window", {
   },
 
   methods: {
-    checkForIncomingErrors() {
+    maybeSwitchToErrorsTab() {
       if (this.errorMessages !== null && this.errorMessages.length !== 0) {
         this.currentTab = "compiler-errors";
       }
