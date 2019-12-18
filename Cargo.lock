@@ -124,7 +124,7 @@ dependencies = [
  "serde 1.0.103 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.41 (registry+https://github.com/rust-lang/crates.io-index)",
  "tide 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "tide-naive-static-files 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tide-naive-static-files 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -856,7 +856,7 @@ dependencies = [
 
 [[package]]
 name = "tide-naive-static-files"
-version = "1.0.0"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "async-std 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1179,7 +1179,7 @@ dependencies = [
 "checksum string 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d24114bfcceb867ca7f71a0d3fe45d45619ec47a6fbfa98cb14e14250bfa5d6d"
 "checksum syn 1.0.8 (registry+https://github.com/rust-lang/crates.io-index)" = "661641ea2aa15845cddeb97dad000d22070bb5c1fb456b96c1cba883ec691e92"
 "checksum tide 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "07dc99c450fb7057f6357b5e7fd531676426b50d4f6c625c6232630d7353bb0a"
-"checksum tide-naive-static-files 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3a08f74a2dd870aa33081e783f458e6ab4bd561d09fd8a626783c4ef89cac504"
+"checksum tide-naive-static-files 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "21b42deb8f1b0cdc2c78b4cc467fe9b1ec1cf1b511aa00feeaee676485f1079d"
 "checksum time 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "db8dcfca086c1143c9270ac42a2bbd8a7ee477b78ac8e45b19abfb0cbede4b6f"
 "checksum tokio 0.1.22 (registry+https://github.com/rust-lang/crates.io-index)" = "5a09c0b5bb588872ab2f09afa13ee6e9dac11e10a0ec9e8e3ba39a5a5d530af6"
 "checksum tokio-buf 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "8fb220f46c53859a4b7ec083e41dec9778ff0b1851c0942b211edb89e0ccdc46"

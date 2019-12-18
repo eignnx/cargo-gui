@@ -177,7 +177,7 @@ async fn main() {
     app.at("/api/stderr_line").get(get_stderr_line);
     app.at("/api/cmd_status").get(get_cmd_status);
     app.at("/").get(tide::redirect("/index.html"));
-    app.at("/*")
+    app.at("/*path")
         .get(|req| async { serve_static_files(req).await.unwrap() });
     app.listen(format!("localhost:{}", PORT)).await.unwrap();
 }
