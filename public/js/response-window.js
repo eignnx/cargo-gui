@@ -216,6 +216,6 @@ function safeJsonParse(str) {
   }
 }
 
-const abortRegex = /.*aborting due to \d+ previous error(s?).*$/;
+const abortRegex = /.*aborting due to( \d+)? previous error(s?).*/;
 const explainRegex = /For more information about (this|an) error, try `rustc --explain .*/;
 const detailedRegex = /Some errors have detailed explanations:.*/
