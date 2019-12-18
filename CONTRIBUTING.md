@@ -16,11 +16,23 @@ If you want to contribute to the project, you'll want to download the project fr
 
 First get the source code from GitHub:
 
+### Linux
+
 ```shell
 $ git clone https://github.com/eignnx/cargo-gui.git
 ```
 
+### Windows 10
+
+```powershell
+> git clone https://github.com/eignnx/cargo-gui.git
+```
+
+## Save Working Directory
+
 Save the path to the `cargo-gui/Cargo.toml` file. This is needed to—from a different directory—run the development copy you just downloaded (as opposed to the `cargo gui` command you may have installed from crates.io).
+
+### Linux
 
 ```shell
 $ cd cargo-gui
@@ -28,12 +40,32 @@ $ # Save the manifest file's path
 $ CARGO_GUI_DEV=`pwd`/Cargo.toml
 ```
 
+### Windows 10
+
+```powershell
+> cd cargo-gui
+> # Save the manifest file's path
+> set CARGO_GUI_DEV=%cd%/Cargo.toml
+```
+
 ## Start the Server
 
 Next, go to the directory of some cargo project and start the `cargo-gui` server:
+
+### Linux
+
 ```shell
 $ cd path/to/my-cargo-project
 $ cargo run --manifest-path $CARGO_GUI_DEV
+
+Server is listening on: http://127.0.0.1:9345
+```
+
+### Windows 10
+
+```powershell
+> cd path\to\my-cargo-project
+> cargo run --manifest-path %CARGO_GUI_DEV%
 
 Server is listening on: http://127.0.0.1:9345
 ```

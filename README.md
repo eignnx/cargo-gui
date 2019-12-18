@@ -38,6 +38,8 @@ If building or checking your program results in compilation errors, they will be
 
 ## Planned Features
 - [x] Streaming input from `cargo`. Compiler messages and errors come in *asynchronously* as they are produced by the remote `cargo` command! (`v0.3.0`)
+- [x] Windows 10 support. (`v0.3.1`)
+- [ ] Test on MacOS. See [this issue](https://github.com/eignnx/cargo-gui/issues/20) if it works for you on MacOS!
 - [ ] Specialized display for `cargo test` commands.
 - [ ] Cancellable commands via the `Cancel (^C)` button.
 - [ ] Color themes (dark/light mode).
