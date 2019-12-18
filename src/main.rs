@@ -1,59 +1,19 @@
 use std::env;
-use std::path::{Path, PathBuf};
-use std::pin::Pin;
+use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
 use async_std::stream::{Stream, StreamExt};
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use serde::{self, Deserialize, Serialize};
-use tide_naive_static_files::{serve_static_files, StaticRootDir};
+use tide_naive_static_files::serve_static_files;
 
+mod app;
 mod init;
 
+use app::{AppState, CmdStatus, IoStream};
+
 const PORT: u16 = 9345;
-
-type IoStream = Pin<Box<dyn Stream<Item = String> + Send + Sync>>;
-
-struct AppState {
-    home_dir: PathBuf,
-    cmd_stdout: Arc<Mutex<Option<IoStream>>>,
-    cmd_stderr: Arc<Mutex<Option<IoStream>>>,
-    cmd_status: Arc<Mutex<Option<CmdStatus>>>,
-}
-
-impl AppState {
-    fn new(home_dir: PathBuf) -> Self {
-        Self {
-            home_dir,
-            cmd_stdout: Arc::new(Mutex::new(None)),
-            cmd_stderr: Arc::new(Mutex::new(None)),
-            cmd_status: Arc::new(Mutex::new(None)),
-        }
-    }
-
-    // TODO: analyse for potential deadlock.
-    async fn reset_cmd(&self) {
-        {
-            let mut guard = self.cmd_stdout.lock().await;
-            *guard = None;
-        }
-        {
-            let mut guard = self.cmd_stderr.lock().await;
-            *guard = None;
-        }
-        {
-            let mut guard = self.cmd_status.lock().await;
-            *guard = None;
-        }
-    }
-}
-
-impl StaticRootDir for AppState {
-    fn root_dir(&self) -> &Path {
-        &self.home_dir
-    }
-}
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -194,15 +154,6 @@ async fn get_stdout_line(req: Req) -> LineMsg {
 async fn get_stderr_line(req: Req) -> LineMsg {
     let arc = req.state().cmd_stderr.clone();
     get_line(arc).await
-}
-
-#[derive(Serialize, Debug)]
-struct CmdStatus(i32);
-
-impl tide::IntoResponse for CmdStatus {
-    fn into_response(self) -> tide::Response {
-        tide::Response::new(200).body_json(&self).unwrap()
-    }
 }
 
 async fn get_cmd_status(req: Req) -> CmdStatus {
