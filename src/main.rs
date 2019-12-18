@@ -9,6 +9,8 @@ use async_std::task;
 use serde::{self, Deserialize, Serialize};
 use tide_naive_static_files::{serve_static_files, StaticRootDir};
 
+mod init;
+
 const PORT: u16 = 9345;
 
 type IoStream = Pin<Box<dyn Stream<Item = String> + Send + Sync>>;
@@ -155,39 +157,6 @@ async fn start_running_cargo_cmd(mut req: Req) -> tide::Response {
     tide::Response::new(200)
 }
 
-fn init_js_app(home_dir: impl AsRef<Path>) {
-    let wd = std::fs::canonicalize(home_dir.as_ref().join("public")).unwrap();
-    if cfg!(not(target_os = "windows")) {
-        let status = Command::new("npm")
-            .arg("install")
-            .current_dir(wd)
-            .status()
-            .expect("`npm install` will run successfully");
-
-        if !status.success() {
-            panic!("`npm install` failed to run!");
-        }
-    } else if cfg!(target_os = "windows") {
-        let output = Command::new(r"C:\Windows\System32\where.exe")
-            .arg("npm")
-            .output()
-            .expect("`where npm` ran successfully");
-
-        let output = std::str::from_utf8(&output.stdout).unwrap();
-        let path_to_npm = output.lines().nth(1).unwrap();
-
-        let status = Command::new(path_to_npm)
-            .arg("install")
-            .current_dir(wd)
-            .status()
-            .expect("`npm install` will run successfully");
-
-        if !status.success() {
-            panic!("`npm install` failed to run!");
-        }
-    }
-}
-
 #[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 enum LineMsg {
@@ -247,7 +216,7 @@ async fn main() {
     // This environment variable is set up during compilation by `build.rs`.
     let cargo_gui_home = env!("CARGO_GUI_HOME");
 
-    init_js_app(&cargo_gui_home);
+    init::init_js_app(&cargo_gui_home);
 
     let state = AppState::new(PathBuf::from(cargo_gui_home).join("public").into());
     let mut app = tide::with_state(state);
