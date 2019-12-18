@@ -98,14 +98,27 @@ async fn start_running_cargo_cmd(mut req: Req) -> tide::Response {
     let cmd_stderr = req.state().cmd_stderr.clone();
     register_cmd_stdio(cmd_stderr, child.stderr.take().unwrap()).await;
 
+    // Store the child process in AppState.
+    let current_process = req.state().current_process.clone();
+    {
+        let mut guard = current_process.lock().await;
+        *guard = Some(child);
+    }
+
     // Spawn a new thread (1) and a new task (2) to wait for the process to
     // finish (1) and for the `AppState.cmd_status` mutex to lock (2). We need
     // to do these asynchronously so that this Endpoint function returns
     // immediately.
     task::spawn(async move {
         let status = task::spawn_blocking(move || {
-            let handle = child.wait_with_output().unwrap();
-            handle.status.code().unwrap()
+            use std::ops::DerefMut;
+            let mut child_guard = task::block_on(async { current_process.lock().await }); // Likely a deadlock here...
+            if let Some(child) = child_guard.deref_mut() {
+                let exit_status = child.wait().unwrap();
+                exit_status.code().unwrap()
+            } else {
+                unimplemented!();
+            }
         })
         .await;
 
@@ -115,6 +128,10 @@ async fn start_running_cargo_cmd(mut req: Req) -> tide::Response {
     });
 
     tide::Response::new(200)
+}
+
+async fn cancel_current_cmd(req: Req) -> tide::Response {
+    unimplemented!();
 }
 
 #[derive(Serialize, Debug)]
@@ -176,6 +193,7 @@ async fn main() {
     app.at("/api/stdout_line").get(get_stdout_line);
     app.at("/api/stderr_line").get(get_stderr_line);
     app.at("/api/cmd_status").get(get_cmd_status);
+    app.at("/api/cancel_cmd").post(cancel_current_cmd);
     app.at("/").get(tide::redirect("/index.html"));
     app.at("/*path")
         .get(|req| async { serve_static_files(req).await.unwrap() });
