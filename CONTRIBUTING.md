@@ -12,6 +12,16 @@ If you don't find this document very clear, but are still interested in helping 
 
 If you want to contribute to the project, you'll want to download the project from the GitHub repository and be able to run that development version rather than the  `cargo gui` version that's on crates.io.
 
+You'll also need `npm` and `vue-cli` installed (??).
+
+You'll need `vue-cli` to watch our Vue app and recompile changes. You can either use the `vue ui` web app to handle this, or you can run this command yourself:
+
+```shell
+$ pwd # Ensure you're in the `cargo-gui/frontend` directory.
+$ vue-cli-service build --mode production --dest dist --target app --watch --dashboard
+```
+Start up `vue ui` and 
+
 ## Clone the Repository
 
 First get the source code from GitHub:

@@ -162,14 +162,41 @@ async fn get_cmd_status(req: Req) -> CmdStatus {
     guard.take().unwrap_or(CmdStatus(9999))
 }
 
+use structopt::StructOpt;
+
+#[derive(StructOpt, Debug)]
+#[structopt(name = "cargo gui")]
+struct Args {
+    #[structopt(short, long)]
+    /// Run in development mode. You only need this if you are contributing to the cargo-gui project!
+    dev_mode: bool,
+}
+
+impl Args {
+    fn dev_mode(&self) -> bool {
+        self.dev_mode
+    }
+
+    fn prod_mode(&self) -> bool {
+        !self.dev_mode()
+    }
+}
+
 #[async_std::main]
 async fn main() {
     // This environment variable is set up during compilation by `build.rs`.
     let cargo_gui_home = env!("CARGO_GUI_HOME");
 
+    let args = Args::from_args();
+
     init::init_js_app(&cargo_gui_home);
 
-    let state = AppState::new(PathBuf::from(cargo_gui_home).join("public").into());
+    // let state = AppState::new(PathBuf::from(cargo_gui_home).join("public").into());
+    let static_root = PathBuf::from(cargo_gui_home)
+        .join("frontend")
+        .join(if args.dev_mode() { "public" } else { "dist" })
+        .into();
+    let state = AppState::new(static_root);
     let mut app = tide::with_state(state);
     app.at("/api/cargo").post(start_running_cargo_cmd);
     app.at("/api/project_config").get(get_project_config);
