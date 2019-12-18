@@ -1,7 +1,7 @@
 # cargo-gui
 A browser interface for working through rustc errors and running cargo commands.
 
-![See the repository for a screen shot](https://github.com/eignnx/cargo-gui/blob/master/test-screenshot.png)
+![See the repository for a screen shot](https://raw.githubusercontent.com/eignnx/cargo-gui/master/test-screenshot.png)
 
 ## Instructions
 
