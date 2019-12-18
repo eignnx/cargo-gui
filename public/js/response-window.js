@@ -130,6 +130,7 @@ const responseWindow = Vue.component("response-window", {
       return this.stdoutLines
         .filter(line => !abortRegex.test(line))
         .filter(line => !explainRegex.test(line))
+        .filter(line => !detailedRegex.test(line))
         .map(safeJsonParse)
         .filter(json => json.reason === "compiler-message")
         .map(cleanJsonMessage);
@@ -216,4 +217,5 @@ function safeJsonParse(str) {
 }
 
 const abortRegex = /.*aborting due to \d+ previous error(s?).*$/;
-const explainRegex = /For more information about this error, try `rustc --explain E\d+`./;
+const explainRegex = /For more information about (this|an) error, try `rustc --explain .*/;
+const detailedRegex = /Some errors have detailed explanations:.*/
