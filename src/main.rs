@@ -78,7 +78,6 @@ struct ProjectConfig {
 type Req = tide::Request<AppState>;
 
 async fn get_project_config(_: Req) -> String {
-    println!("project config requested");
     let project_working_dir = env::current_dir().expect("pwd is accessible");
     let path = project_working_dir
         .to_str()
