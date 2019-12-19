@@ -1,0 +1,10 @@
+#project-title {
+    font-family: sans-serif;
+}
+
+.terminal-output {
+    padding: 2rem;
+
+    border: 2px solid grey;
+    border-radius: 5px;
+}
