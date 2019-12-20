@@ -1,37 +1,36 @@
-const app = new Vue({
-  el: "#app",
-  template: `
-    <main class="container">
-        <project-title
-            :title="projectConfig ? projectConfig.title : '...'"
-            :path="projectConfig ? projectConfig.path : '...'"
-        />
+<template>
+  <main id="app" class="container">
+    <project-title
+      :title="projectConfig ? projectConfig.title : '...'"
+      :path="projectConfig ? projectConfig.path : '...'"
+    />
 
-        <cmd-menu
-            @cargo-cmd="cargoCmd"
-            @custom-cmd="customCmd"
-            :cmdRunning="cmdRunning"
-        />
+    <cmd-menu @cargo-cmd="cargoCmd" @custom-cmd="customCmd" :cmdRunning="cmdRunning" />
 
-        <loading-indicator
-            v-if="cmdRunning"
-            @cancel="cancelCmd"
-        />
+    <loading-indicator v-if="cmdRunning" @cancel="cancelCmd" />
 
-        <response-window
-            v-if="cmdRunning || cmdStatus !== null"
-            :cmdStatus="cmdStatus"
-            :stdoutLines="stdoutLines"
-            :stderrLines="stderrLines"
-            :lastCmd="mostRecentCmd"
-            ref="responseWindow"
-        />
+    <response-window
+      v-if="cmdRunning || cmdStatus !== null"
+      :cmdStatus="cmdStatus"
+      :stdoutLines="stdoutLines"
+      :stderrLines="stderrLines"
+      :lastCmd="mostRecentCmd"
+      ref="responseWindow"
+    />
 
-        <cmd-history
-            :history="history"
-        />
-    </main>
-    `,
+    <cmd-history :history="history" />
+  </main>
+</template>
+
+<script>
+import ProjectTitle from "./components/ProjectTitle.vue";
+import CmdMenu from "./components/CmdMenu.vue";
+import CmdHistory from "./components/CmdHistory.vue";
+import LoadingIndicator from "./components/LoadingIndicator.vue";
+import ResponseWindow from "./components/ResponseWindow.vue";
+
+export default {
+  name: "app",
 
   data: () => ({
     projectConfig: null,
@@ -166,14 +165,18 @@ const app = new Vue({
   },
 
   components: {
-    projectTitle,
-    cmdMenu,
-    cmdHistory,
-    loadingIndicator,
-    responseWindow
+    ProjectTitle,
+    CmdMenu,
+    CmdHistory,
+    LoadingIndicator,
+    ResponseWindow
   }
-});
+};
 
 function defer() {
   return new Promise(resolve => setTimeout(resolve, 0));
 }
+</script>
+
+<style lang="scss">
+</style>

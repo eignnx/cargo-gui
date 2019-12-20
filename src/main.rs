@@ -169,7 +169,11 @@ async fn main() {
 
     init::init_js_app(&cargo_gui_home);
 
-    let state = AppState::new(PathBuf::from(cargo_gui_home).join("public").into());
+    let static_root = PathBuf::from(cargo_gui_home)
+        .join("frontend")
+        .join("dist")
+        .into();
+    let state = AppState::new(static_root);
     let mut app = tide::with_state(state);
     app.at("/api/cargo").post(start_running_cargo_cmd);
     app.at("/api/project_config").get(get_project_config);

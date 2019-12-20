@@ -12,20 +12,38 @@ If you don't find this document very clear, but are still interested in helping 
 
 If you want to contribute to the project, you'll want to download the project from the GitHub repository and be able to run that development version rather than the  `cargo gui` version that's on crates.io.
 
+
 ## Clone the Repository
 
 First get the source code from GitHub:
 
-### Linux
+### Linux / Windows 10
 
 ```shell
 $ git clone https://github.com/eignnx/cargo-gui.git
 ```
 
-### Windows 10
+## Install Web App Dependencies
 
-```powershell
-> git clone https://github.com/eignnx/cargo-gui.git
+First, you'll want to run `npm install` inside the `cargo-gui/frontend` directory to install all dependencies. This only needs to be done when you first install the project or when a new npm dependency is added.
+
+### Linux / Windows 10
+
+```shell
+$ cd frontend # Ensure you're in the `cargo-gui/frontend` directory.
+$ npm install
+```
+
+## Building the Vue App
+
+Next, run the build command. If you will be editing the vue web app source code (located in `cargo-gui/frontend/src`), you'll want to add the `--watch` option so that the source is constantly recompiled whenever it changes.
+
+### Linux / Windows 10
+
+```shell
+$ # From inside `cargo-gui/frontend`
+$ npm run build # If NOT editing `cargo-gui/frontend/src`
+$ npm run build -- --watch # If editing `cargo-gui/frontend/src`
 ```
 
 ## Save Working Directory
@@ -67,7 +85,7 @@ Server is listening on: http://127.0.0.1:9345
 > cd path\to\my-cargo-project
 > cargo run --manifest-path %CARGO_GUI_DEV%
 
-Server is listening on: http://127.0.0.1:9345
+Server is listening on: http://[::1]:9345
 ```
 
 ## Open the Dashboard
