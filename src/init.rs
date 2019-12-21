@@ -3,7 +3,7 @@ use std::path::Path;
 use std::process::Command;
 
 pub fn init_js_app(home_dir: impl AsRef<Path>) {
-    let wd = canonicalize(home_dir.as_ref().join("public")).unwrap();
+    let wd = canonicalize(home_dir.as_ref().join("frontend")).unwrap();
     if cfg!(not(target_os = "windows")) {
         let status = Command::new("npm")
             .arg("install")
