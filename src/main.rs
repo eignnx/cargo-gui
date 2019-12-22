@@ -158,8 +158,8 @@ async fn get_stderr_line(req: Req) -> LineMsg {
 
 async fn get_cmd_status(req: Req) -> CmdStatus {
     let state = req.state();
-    let mut guard = state.cmd_status.lock().await;
-    guard.take().unwrap_or(CmdStatus(9999))
+    let guard = state.cmd_status.lock().await;
+    guard.unwrap()
 }
 
 #[async_std::main]

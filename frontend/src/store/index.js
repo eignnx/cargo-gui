@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    projectConfig: null,
+    cmdRunning: false,
     releaseBuild: false,
     stdoutLines: null,
     stderrLines: null,
@@ -17,6 +17,7 @@ export default new Vuex.Store({
 
   mutations: {
     resetCmd(state) {
+      state.cmdRunning = true;
       state.cmdStatus = null;
       state.stdoutLines = [];
       state.stderrLines = [];
@@ -47,12 +48,21 @@ export default new Vuex.Store({
 
     stderrLinesDone(state) {
       state.stderrLinesDone = true;
+    },
+
+    cmdFinished(state) {
+      state.cmdRunning = false;
     }
   },
 
   getters: {
-    cmdRunning(state) {
-      return !state.stdoutLinesDone || !state.stderrLinesDone;
+
+    cmdResultsReady(state) {
+      return state.stdoutLinesDone && state.stderrLinesDone && state.cmdStatus !== null;
+    },
+
+    mostRecentCmd(state) {
+      return state.history.length ? state.history[state.history.length - 1] : null;
     }
   },
 
@@ -105,6 +115,7 @@ export default new Vuex.Store({
       const resp = await fetch("/api/cmd_status");
       const code = await resp.json();
       commit("setStatusCode", code);
+      commit("cmdFinished");
       return code;
     },
   },

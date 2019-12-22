@@ -6,7 +6,7 @@
           <h4 class="alert-heading">Compiler Error!</h4>
           <p>
             The command
-            <strong class="text-monospace">{{ lastCmd }}</strong> exited with status code
+            <strong class="text-monospace">{{ mostRecentCmd }}</strong> exited with status code
             <strong class="text-monospace">{{ cmdStatus }}</strong>, and there are
             <strong class="text-monospace">{{ errorMessages.length }}</strong> errors!
           </p>
@@ -20,7 +20,7 @@
           <h4 class="alert-heading">Success!</h4>
           <p>
             The command
-            <strong class="text-monospace">{{ lastCmd }}</strong> exited successfully with status code
+            <strong class="text-monospace">{{ mostRecentCmd }}</strong> exited successfully with status code
             <strong class="text-monospace">{{ cmdStatus }}</strong>.
           </p>
         </div>
@@ -73,7 +73,7 @@
             <div class="row">
               <div class="col">
                 <h3>Compiler Messages</h3>
-                <pre class="terminal-output" v-html="compilerMessages.join('\\n')"></pre>
+                <pre class="terminal-output" v-html="compilerMessages.join('\n')"></pre>
               </div>
             </div>
           </div>
@@ -108,16 +108,10 @@
 <script>
 import PaginationNav from "./PaginationNav.vue";
 import { default as AnsiUp } from "ansi_up";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   name: "response-window",
-
-  props: [
-    "cmdStatus",
-    "stdoutLines",
-    "stderrLines",
-    "lastCmd" // The last command executed.
-  ],
 
   data: () => ({
     currentErrorIdx: 0,
@@ -125,12 +119,15 @@ export default {
   }),
 
   computed: {
+    ...mapState(["cmdStatus", "stdoutLines", "stderrLines"]),
+    ...mapGetters(["mostRecentCmd"]),
+
     currentErrorMessage() {
       return this.errorMessages[this.currentErrorIdx];
     },
 
     errorMessages() {
-      return this.stdoutLines
+      return (this.stdoutLines || [])
         .filter(line => !abortRegex.test(line))
         .filter(line => !explainRegex.test(line))
         .filter(line => !detailedRegex.test(line))
@@ -150,7 +147,7 @@ export default {
     },
 
     compilerMessages() {
-      return this.stderrLines;
+      return this.stderrLines || [];
     },
 
     compilerMessagesTabClasses() {

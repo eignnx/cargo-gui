@@ -9,20 +9,14 @@
 
     <loading-indicator v-if="cmdRunning" @cancel="cancelCmd" />
 
-    <response-window
-      v-if="cmdRunning || cmdStatus !== null"
-      :cmdStatus="cmdStatus"
-      :stdoutLines="stdoutLines"
-      :stderrLines="stderrLines"
-      :lastCmd="mostRecentCmd"
-      ref="responseWindow"
-    />
+    <response-window v-if="cmdRunning || cmdResultsReady" ref="responseWindow" />
 
     <cmd-history :history="history" />
   </main>
 </template>
 
 <script>
+import { mapGetters, mapActions, mapState } from "vuex";
 import ProjectTitle from "./components/ProjectTitle.vue";
 import CmdMenu from "./components/CmdMenu.vue";
 import CmdHistory from "./components/CmdHistory.vue";
@@ -33,14 +27,7 @@ export default {
   name: "app",
 
   data: () => ({
-    projectConfig: null,
-    releaseBuild: false,
-    cmdStatus: null,
-    stdoutLines: null,
-    stderrLines: null,
-    stdoutLinesDone: true,
-    stderrLinesDone: true,
-    history: []
+    projectConfig: null
   }),
 
   mounted() {
@@ -50,16 +37,13 @@ export default {
   },
 
   computed: {
-    mostRecentCmd() {
-      return this.history[this.history.length - 1];
-    },
-
-    cmdRunning() {
-      return !this.stdoutLinesDone || !this.stderrLinesDone;
-    }
+    ...mapGetters(["cmdResultsReady"]),
+    ...mapState(["cmdRunning", "history"])
   },
 
   methods: {
+    ...mapActions(["runCargoCmd"]),
+
     customCmd(cmd) {
       console.log(`attempting to run \`\$ ${cmd}\`...`);
       this.cmdResponse = "i don't know how to run custom cmds yet, srry";
@@ -75,28 +59,32 @@ export default {
     },
 
     cargoCmd([cmd, ...cargoOpts]) {
-      const cmdText = `cargo ${cmd} ${cargoOpts.join(" ")}`.trim();
-      this.history.push(cmdText);
-
-      // This starts the loading spinner.
-      this.resetCmd();
-
-      fetch("/api/cargo", {
-        method: "POST",
-        headers: new Headers({ "Content-Type": "application/json" }),
-        body: JSON.stringify({ cmd, cargoOpts })
-      }).then(_resp => {
-        // this.cmdStatus = resp.status;
-        // if (resp.status === 0) {
-        //     // Remove first line, which is a JSON compiler_artifact message.
-        //     this.cmdResponse = resp.stdout.split("\n").slice(1).join("\n");
-        //     this.errors = null;
-        // } else {
-        //     this.displayCompilerError(resp.stdout);
-        // }
-        this.readNextLine("stdout");
-        this.readNextLine("stderr");
+      this.runCargoCmd([cmd, ...cargoOpts]).then(status => {
+        this.$refs.responseWindow.maybeSwitchToErrorsTab();
       });
+
+      // const cmdText = `cargo ${cmd} ${cargoOpts.join(" ")}`.trim();
+      // this.history.push(cmdText);
+
+      // // This starts the loading spinner.
+      // this.resetCmd();
+
+      // fetch("/api/cargo", {
+      //   method: "POST",
+      //   headers: new Headers({ "Content-Type": "application/json" }),
+      //   body: JSON.stringify({ cmd, cargoOpts })
+      // }).then(_resp => {
+      //   // this.cmdStatus = resp.status;
+      //   // if (resp.status === 0) {
+      //   //     // Remove first line, which is a JSON compiler_artifact message.
+      //   //     this.cmdResponse = resp.stdout.split("\n").slice(1).join("\n");
+      //   //     this.errors = null;
+      //   // } else {
+      //   //     this.displayCompilerError(resp.stdout);
+      //   // }
+      //   this.readNextLine("stdout");
+      //   this.readNextLine("stderr");
+      // });
     },
 
     readNextLine(stream_name) {

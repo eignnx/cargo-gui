@@ -48,7 +48,7 @@ impl StaticRootDir for AppState {
     }
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone, Copy)]
 pub struct CmdStatus(pub i32);
 
 impl tide::IntoResponse for CmdStatus {
