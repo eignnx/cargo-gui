@@ -27,6 +27,7 @@ impl AppState {
 
     // TODO: analyse for potential deadlock.
     pub async fn reset_cmd(&self) {
+        eprintln!("\nRESETTING CMD...");
         {
             let mut guard = self.cmd_stdout.lock().await;
             *guard = None;
@@ -48,7 +49,7 @@ impl StaticRootDir for AppState {
     }
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone, Copy)]
 pub struct CmdStatus(pub i32);
 
 impl tide::IntoResponse for CmdStatus {

@@ -111,6 +111,7 @@ async fn start_running_cargo_cmd(mut req: Req) -> tide::Response {
 
         let mtx = &req.state().cmd_status;
         let mut guard = mtx.lock().await;
+        eprintln!("GOT CMD STATUS!!! Setting...");
         *guard = Some(CmdStatus(status));
     });
 
@@ -146,20 +147,50 @@ async fn get_line(mtx: Arc<Mutex<Option<IoStream>>>) -> LineMsg {
     }
 }
 
+fn log_line_msg(line_msg: LineMsg, log_msg: &str) -> LineMsg {
+    match line_msg {
+        LineMsg::End => {
+            eprintln!("{}", log_msg);
+            LineMsg::End
+        }
+        x => x,
+    }
+}
+
 async fn get_stdout_line(req: Req) -> LineMsg {
     let arc = req.state().cmd_stdout.clone();
-    get_line(arc).await
+    let x = get_line(arc).await;
+    log_line_msg(x, "END OF stdout LINES")
 }
 
 async fn get_stderr_line(req: Req) -> LineMsg {
     let arc = req.state().cmd_stderr.clone();
-    get_line(arc).await
+    let x = get_line(arc).await;
+    log_line_msg(x, "END OF stderr LINES")
 }
 
-async fn get_cmd_status(req: Req) -> CmdStatus {
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+enum PollCmdStatus {
+    Ready(CmdStatus),
+    Pending,
+}
+
+impl tide::IntoResponse for PollCmdStatus {
+    fn into_response(self) -> tide::Response {
+        tide::Response::new(200).body_json(&self).unwrap()
+    }
+}
+
+async fn get_cmd_status(req: Req) -> PollCmdStatus {
+    eprintln!("CMD STATUS REQUESTED");
     let state = req.state();
-    let mut guard = state.cmd_status.lock().await;
-    guard.take().unwrap_or(CmdStatus(9999))
+    let guard = state.cmd_status.lock().await;
+    if let Some(&status) = guard.as_ref() {
+        PollCmdStatus::Ready(status)
+    } else {
+        PollCmdStatus::Pending
+    }
 }
 
 #[async_std::main]
