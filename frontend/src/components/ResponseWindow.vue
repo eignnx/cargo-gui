@@ -211,8 +211,8 @@ function safeJsonParse(str) {
   try {
     return JSON.parse(str);
   } catch (e) {
-    console.log(str);
-    console.error("JSON PARSE ERROR:", e, str);
+    // console.log(str);
+    // console.error("JSON PARSE ERROR:", e, str);
   }
 }
 

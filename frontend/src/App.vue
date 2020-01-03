@@ -45,7 +45,7 @@ export default {
     ...mapActions(["runCargoCmd"]),
 
     customCmd(cmd) {
-      console.log(`attempting to run \`\$ ${cmd}\`...`);
+      // console.log(`attempting to run \`\$ ${cmd}\`...`);
       this.cmdResponse = "i don't know how to run custom cmds yet, srry";
       this.history.push(cmd);
     },
@@ -148,7 +148,7 @@ export default {
     // },
 
     cancelCmd() {
-      console.log("cancelled!");
+      // console.log("cancelled!");
     }
   },
 
