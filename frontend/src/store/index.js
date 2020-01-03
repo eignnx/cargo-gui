@@ -113,10 +113,16 @@ export default new Vuex.Store({
 
     async getStatusCode({ commit }) {
       const resp = await fetch("/api/cmd_status");
-      const code = await resp.json();
-      commit("setStatusCode", code);
-      commit("cmdFinished");
-      return code;
+      const json = await resp.json();
+      if (json.hasOwnProperty("ready")) {
+        const code = json["ready"];
+        console.log("GOT THE STATUS CODE:", code);
+        commit("setStatusCode", code);
+        commit("cmdFinished");
+        return code;
+      } else {
+        return await commit("getStatusCode");
+      }
     },
   },
 

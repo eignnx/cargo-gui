@@ -27,6 +27,7 @@ impl AppState {
 
     // TODO: analyse for potential deadlock.
     pub async fn reset_cmd(&self) {
+        eprintln!("\nRESETTING CMD...");
         {
             let mut guard = self.cmd_stdout.lock().await;
             *guard = None;
