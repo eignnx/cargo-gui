@@ -34,15 +34,19 @@ $ cd frontend # Ensure you're in the `cargo-gui/frontend` directory.
 $ npm install
 ```
 
-## Building the Vue App
+## Building the Vue App (for front end devs only)
 
-Next, run the build command. If you will be editing the vue web app source code (located in `cargo-gui/frontend/src`), you'll want to add the `--watch` option so that the source is constantly recompiled whenever it changes.
+Next, if you will be editing the frontend application (anything located inside the `cargo-gui/frontend` directory) you'll want to run the build command every time you make a change. Do this by either:
+ - restarting the server after every change (kinda annoying)
+ - running the `npm run build -- --watch` command so that the frontend source is constantly recompiled whenever it changes. This command will need to be run in its own terminal window.
 
 ### Linux / Windows 10
 
+To run the `--watch` command:
+
 ```shell
+$ # From a new terminal window
 $ # From inside `cargo-gui/frontend`
-$ npm run build # If NOT editing `cargo-gui/frontend/src`
 $ npm run build -- --watch # If editing `cargo-gui/frontend/src`
 ```
 
