@@ -2,3 +2,4 @@
 **/*.rs.bk
 public/node_modules
 .idea/
+*.checksum
